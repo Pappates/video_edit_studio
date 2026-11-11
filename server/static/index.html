@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video Edit Studio</title>
+<style>
+:root{
+  --bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2a2f3a;--text:#e7e9ee;--mute:#8b93a3;
+  --accent:#ffb020;--cut:#ef4b5a;--keep:#2fbf71;--reel:#4c8dff;--chatter:#b07cff;--silence:#5b6474;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+header h1{font-size:16px;margin:0;letter-spacing:.3px}
+header h1 b{color:var(--accent)}
+.chips{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.chip{font-size:11px;padding:3px 8px;border-radius:99px;background:var(--panel2);color:var(--mute);border:1px solid var(--line)}
+.chip.ok{color:var(--keep);border-color:#2fbf7155}.chip.bad{color:var(--cut);border-color:#ef4b5a55}
+nav{display:flex;gap:4px;padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;color:var(--mute);padding:10px 14px;cursor:pointer;font:inherit;border-bottom:2px solid transparent}
+nav button.on{color:var(--text);border-color:var(--accent)}
+main{padding:18px 20px;max-width:1500px;margin:0 auto}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:34px;text-align:center;color:var(--mute);background:var(--panel);transition:.15s}
+.drop.hover{border-color:var(--accent);color:var(--text)}
+.drop strong{color:var(--text);display:block;font-size:16px;margin-bottom:6px}
+.opts{display:flex;gap:16px;justify-content:center;margin-top:14px;flex-wrap:wrap;font-size:13px}
+.btn{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px}
+.btn:hover{border-color:var(--mute)}.btn.primary{background:var(--accent);color:#111;border-color:var(--accent);font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;margin-top:16px}
+@media (max-width:1000px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+video{width:100%;max-height:52vh;background:#000;border-radius:8px;display:block}
+.timeline{position:relative;height:44px;margin-top:10px;background:var(--panel2);border-radius:6px;cursor:pointer;overflow:hidden}
+.timeline .blk{position:absolute;top:6px;bottom:6px;border-radius:3px;opacity:.85}
+.timeline .blk.off{opacity:.25;background-image:repeating-linear-gradient(45deg,transparent 0 4px,#0006 4px 8px)}
+.timeline .head{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);pointer-events:none}
+.timeline .mark{position:absolute;top:0;bottom:0;background:#ffb02033;pointer-events:none}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stats{font-family:var(--mono);font-size:12px;color:var(--mute)}
+.stats b{color:var(--text)}
+.progress{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .4s}
+.msg{font-size:12px;color:var(--mute)}
+.list{max-height:62vh;overflow:auto;margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.item{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--panel2)}
+.item.off{opacity:.5}
+.item .top{display:flex;gap:8px;align-items:center}
+.badge{font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:4px;color:#111;font-weight:700}
+.t{font-family:var(--mono);font-size:12px;color:var(--mute)}
+.t input{width:72px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:4px;padding:2px 4px;font:inherit}
+.reason{font-size:12px;color:var(--mute);margin-top:4px}
+.quote{font-size:13px;margin-top:4px;color:var(--text);text-decoration:line-through;text-decoration-color:#ef4b5a99}
+.item.off .quote{text-decoration:none}
+.conf{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--mute)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.filters label{font-size:12px;color:var(--mute);display:flex;gap:4px;align-items:center}
+.tr{max-height:30vh;overflow:auto;font-size:13px;margin-top:10px;line-height:1.7}
+.tr span{cursor:pointer;border-radius:3px;padding:0 1px}
+.tr span:hover{background:var(--panel2)}
+.tr span.cut{color:var(--cut);text-decoration:line-through}
+.tr span.now{background:#ffb02033}
+.reel input.title{background:transparent;border:0;color:var(--text);font:600 14px system-ui;width:100%}
+.reel textarea{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;font:inherit;font-size:12px;padding:6px;margin-top:6px;resize:vertical}
+.links a{color:var(--reel);font-size:12px;margin-right:10px}
+.hint{font-size:12px;color:var(--mute);margin-top:8px}
+kbd{font-family:var(--mono);font-size:11px;background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.jobs td{padding:6px 10px;border-bottom:1px solid var(--line);font-size:13px}
+.jobs a{color:var(--reel);cursor:pointer}
+.hidden{display:none!important}
+select{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px;font:inherit;font-size:13px}
+.err{white-space:pre-wrap;font-family:var(--mono);font-size:11px;color:var(--cut);max-height:200px;overflow:auto}
+.spk-lane{position:absolute;left:0;right:0;bottom:0;height:7px;pointer-events:none}
+.spk-lane i{position:absolute;top:0;bottom:0}
+.spkrow{display:grid;grid-template-columns:14px minmax(90px,1fr) auto auto minmax(120px,1.4fr) 58px auto;grid-template-areas:"dot nm inf pl sl db mu";gap:8px;align-items:center;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);margin-top:6px}
+.spkrow.muted{opacity:.55}
+.spkrow .dot{width:12px;height:12px;border-radius:50%}
+.spkrow input[type=text]{background:transparent;border:0;border-bottom:1px dashed var(--line);color:var(--text);font:inherit;padding:2px 0;min-width:0}
+.spkrow input[type=range]{width:100%;accent-color:var(--accent)}
+.db{font-family:var(--mono);font-size:12px;text-align:right}
+.tag{display:inline-block;font:700 10px var(--mono);padding:0 4px;border-radius:3px;color:#111;margin-right:3px;cursor:pointer;vertical-align:1px}
+.spkrow .dot{grid-area:dot}.spkrow .nm{grid-area:nm}.spkrow .inf{grid-area:inf}.spkrow .pl{grid-area:pl}
+.spkrow .sl{grid-area:sl}.spkrow .db{grid-area:db;white-space:nowrap}.spkrow .mu{grid-area:mu}
+@media (max-width:640px){.spkrow{grid-template-columns:14px 1fr auto auto;grid-template-areas:"dot nm pl mu" "inf inf inf inf" "sl sl sl db"}.spkrow .inf{font-size:11px}}
+.col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.ylabel{font-size:12px;color:var(--mute);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px}
+.ylabel .msg{text-transform:none;letter-spacing:0}
+#ytPanel textarea,#ytPanel input[type=text],#ytExtraUp{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;font:inherit;font-size:13px;padding:7px;resize:vertical}
+.chrow{display:grid;grid-template-columns:78px 1fr auto auto;gap:6px;align-items:center;margin-top:5px}
+.chrow input.time{font-family:var(--mono);text-align:center}
+.chrow.bad input.time{border-color:var(--cut)!important}
+.titlerow{display:flex;gap:8px;align-items:center;padding:6px 8px;border:1px solid var(--line);border-radius:6px;margin-top:5px;background:var(--panel2);font-size:13px}
+.titlerow span{flex:1}.titlerow em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--mute)}
+#ytPreview{white-space:pre-wrap;font:13px/1.5 system-ui;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;max-height:340px;overflow:auto;margin:0}
+.warn{font-size:12px;color:var(--accent);margin-top:4px}
+.chmark{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);opacity:.9}
+.chmark b{position:absolute;top:2px;left:4px;font:600 10px system-ui;color:var(--text);white-space:nowrap;text-shadow:0 1px 2px #000}
+</style>
+</head>
+<body>
+<header>
+  <h1>Video Edit <b>Studio</b></h1>
+  <div class="chips" id="health"></div>
+</header>
+<nav>
+  <button data-tab="edit" class="on">1 · Video Edit</button>
+  <button data-tab="reels">2 · Reels Üretimi</button>
+  <button data-tab="youtube">3 · YouTube Açıklaması</button>
+  <button data-tab="history">Geçmiş İşler</button>
+</nav>
+<main>
+  <!-- Yükleme -->
+  <section id="upload">
+    <div class="drop" id="drop">
+      <strong id="dropTitle">Ham çekimi buraya sürükleyin</strong>
+      <span id="dropDesc">Konuşmalar yazıya dökülür; "burayı kes", "baştan alıyorum" gibi komutlar, tekrarlar ve uzun sessizlikler bulunur.</span>
+      <div class="opts">
+        <label class="cutopt"><input type="checkbox" id="optClaude" checked> Claude ile doğrula</label>
+        <label class="cutopt"><input type="checkbox" id="optSilence" checked> Sessizlikleri kısalt</label>
+        <label class="cutopt"><input type="checkbox" id="optStutter" checked> Kelime tekrarlarını kes</label>
+        <label><input type="checkbox" id="optDiarize" checked> Konuşmacıları ayır</label>
+        <label>Kişi sayısı <select id="optSpeakers"><option value="0">Otomatik</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+      </div>
+      <div id="ytOpts" class="hidden" style="max-width:640px;margin:14px auto 0;text-align:left">
+        <label class="msg">Her açıklamaya eklenecek sabit bilgiler (isteğe bağlı) — linkler, sosyal medya, iletişim. Tarayıcı hatırlar.</label>
+        <textarea id="ytExtraUp" rows="3" placeholder="📸 Instagram: @kanalim&#10;💼 İletişim: ornek@mail.com"></textarea>
+      </div>
+      <div style="margin-top:14px"><input type="file" id="file" accept="video/*,audio/*" class="hidden">
+        <button class="btn primary" onclick="file.click()">Dosya seç</button></div>
+      <div class="progress hidden" id="upProg"><i style="width:0"></i></div>
+    </div>
+  </section>
+
+  <!-- İş görünümü -->
+  <section id="jobView" class="hidden">
+    <div class="row">
+      <button class="btn" onclick="closeJob()">← Yeni video</button>
+      <strong id="jobName"></strong>
+      <span class="stats" id="jobStats"></span>
+    </div>
+    <div class="progress" id="jobProg"><i style="width:0"></i></div>
+    <div class="msg" id="jobMsg"></div>
+    <div class="err hidden" id="jobErr"></div>
+
+    <div class="grid">
+      <div class="panel">
+        <video id="player" controls preload="metadata"></video>
+        <div class="timeline" id="timeline"><div class="mark hidden" id="markBox"></div><div class="spk-lane" id="spkLane"></div><div class="head" id="head"></div></div>
+        <div class="row" style="margin-top:10px">
+          <label class="row" id="previewWrap"><input type="checkbox" id="preview" checked> Kesilmiş önizleme</label>
+          <span class="t" id="clock">00:00.0</span>
+          <span style="margin-left:auto" class="row">
+            <button class="btn" id="markIn" title="I">Giriş [I]</button>
+            <button class="btn" id="markOut" title="O">Çıkış [O]</button>
+            <button class="btn" id="addCut">+ Kesim ekle</button>
+          </span>
+        </div>
+        <div class="hint"><kbd>Space</kbd> oynat · <kbd>←</kbd>/<kbd>→</kbd> 2 sn · <kbd>I</kbd>/<kbd>O</kbd> aralık işaretle · listede ▶ ile kesilen yeri dinle</div>
+        <div id="spkBox" class="hidden" style="margin-top:14px">
+          <div class="row">
+            <strong>Konuşmacılar</strong><span class="msg" id="spkNote"></span>
+            <span style="margin-left:auto" class="row">
+              <button class="btn" id="eqBtn" title="Herkesin ortalama ses seviyesini birbirine yaklaştırır">Sesleri eşitle</button>
+              <button class="btn" id="resetBtn">Sıfırla</button>
+            </span>
+          </div>
+          <div id="spkList"></div>
+          <div class="row" style="margin-top:8px">
+            <label class="msg row">Yanlış mı ayrıldı? Kişi sayısı
+              <select id="spkCount"><option value="0">Otomatik</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+            <button class="btn" id="rediarBtn">Yeniden ayır</button>
+          </div>
+          <div class="hint">Ses ayarları önizlemede anında duyulur, videoyu oluştururken uygulanır. Tek bir cümlenin konuşmacısı yanlışsa transkriptte başındaki etikete tıklayın. İki kişi aynı anda konuşuyorsa ayar o anki konuşmacıya göre uygulanır.</div>
+        </div>
+        <details style="margin-top:10px"><summary class="msg" style="cursor:pointer">Transkript</summary><div class="tr" id="transcript"></div></details>
+      </div>
+
+      <div class="col">
+      <div class="panel" id="editPanel">
+        <div class="row">
+          <strong>Kesimler</strong><span class="t" id="cutCount"></span>
+          <span style="margin-left:auto" class="row">
+            <button class="btn" onclick="setAll(true)">Tümü</button>
+            <button class="btn" onclick="setAll(false)">Hiçbiri</button>
+          </span>
+        </div>
+        <div class="filters" id="filters"></div>
+        <div class="list" id="cutList"></div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="renderBtn">Videoyu oluştur</button>
+          <select id="editVertical"><option value="">Orijinal oran</option><option value="crop">9:16 kırp</option><option value="blur">9:16 bulanık arka plan</option></select>
+          <span style="margin-left:auto" class="row">
+            <a class="btn" id="exXml">Premiere/DaVinci XML</a><a class="btn" id="exEdl">EDL</a><a class="btn" id="exSrt">SRT</a>
+          </span>
+        </div>
+        <div class="links" id="editOut" style="margin-top:10px"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="ytFromEdit" title="Bölüm zamanları kurgulanmış videoya göre hesaplanır">▶︎ YouTube açıklaması oluştur</button>
+        </div>
+      </div>
+
+      <div class="panel hidden" id="reelPanel">
+        <div class="row">
+          <strong>Reels</strong><span class="t" id="reelCount"></span>
+          <span style="margin-left:auto" class="row">
+            <button class="btn" id="addReel">+ Seçimden reel</button>
+          </span>
+        </div>
+        <div class="msg" id="reelMethod"></div>
+        <div class="list" id="reelList"></div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="renderReels">Seçili reels'leri oluştur</button>
+          <select id="reelVertical"><option value="crop">9:16 ortadan kırp</option><option value="blur">9:16 bulanık arka plan</option><option value="">Orijinal oran</option></select>
+        </div>
+        <div class="links" id="reelOut" style="margin-top:10px"></div>
+      </div>
+
+      <div class="panel hidden" id="ytPanel">
+        <div class="row">
+          <strong>YouTube açıklaması</strong>
+          <span style="margin-left:auto" class="row">
+            <a class="btn" id="ytDl">.txt indir</a>
+            <button class="btn primary" id="ytCopy">Açıklamayı kopyala</button>
+          </span>
+        </div>
+        <div class="msg" id="ytSrc"></div>
+        <div class="hint" id="ytEmpty"></div>
+        <div id="ytBody" class="hidden">
+          <div class="ylabel">Başlık önerileri <span class="msg">— tıkla, kopyalansın</span></div>
+          <div id="ytTitles"></div>
+          <div class="ylabel">Bölümler <span class="msg">— yayınlanacak videonun zamanı; ilk bölüm 00:00, en az 3 bölüm, her biri ≥10 sn</span></div>
+          <div id="ytChapters"></div>
+          <button class="btn" id="ytAddCh" style="margin-top:8px">+ Oynatıcının konumundan bölüm ekle</button>
+          <div class="ylabel">Açıklama</div>
+          <textarea id="ytIntro" rows="6"></textarea>
+          <div class="ylabel">Sabit bilgiler</div>
+          <textarea id="ytExtra" rows="3" placeholder="Linkler, sosyal medya…"></textarea>
+          <div class="ylabel">Hashtag'ler <span class="msg">— boşlukla ayırın; ilk 3'ü başlığın üstünde görünür</span></div>
+          <input type="text" id="ytTags">
+          <div class="ylabel">Etiketler <span class="msg">— YouTube Studio'daki "Etiketler" alanı için, virgülle</span></div>
+          <div class="row"><input type="text" id="ytKeywords" style="flex:1"><button class="btn" id="ytCopyTags">Kopyala</button></div>
+          <div class="ylabel">Önizleme <span class="msg" id="ytLen"></span></div>
+          <pre id="ytPreview"></pre>
+          <div id="ytWarn"></div>
+          <div class="row" style="margin-top:10px">
+            <input type="text" id="ytInstr" placeholder="Değişiklik iste: daha kısa, daha samimi, İngilizce yaz, bölümleri azalt…" style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px;font:inherit;font-size:13px">
+            <button class="btn" id="ytRegen">Yeniden oluştur</button>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="history" class="hidden panel">
+    <table class="jobs" style="width:100%;border-collapse:collapse"><tbody id="jobRows"></tbody></table>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const COLORS = {retake:'#ef4b5a',command:'#ff6b3d',range:'#ff8f3d',repeat:'#ffb020',false_start:'#e6c34a',
+  stutter:'#9fd356',silence:'#5b6474',chatter:'#b07cff'};
+const KIND_TR = {retake:'yeniden çekim',command:'komut',range:'aralık',repeat:'tekrar',false_start:'yarım cümle',
+  stutter:'kekeleme',silence:'sessizlik',chatter:'muhabbet'};
+let mode = 'edit', job = null, transcript = null, poll = null, markIn = null, markOut = null;
+let hiddenKinds = new Set(), saveTimer = null, stopAt = null;
+
+const fmt = s => { if (s == null || isNaN(s)) return '--'; const m = Math.floor(s/60); return `${String(m).padStart(2,'0')}:${(s%60).toFixed(1).padStart(4,'0')}`; };
+const parse = v => { v = String(v).trim(); if (v.includes(':')) { const [m,s] = v.split(':'); return +m*60 + +s; } return +v; };
+const api = async (url, opt={}) => { const r = await fetch(url, opt); if (!r.ok) throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail); return r.json(); };
+const el = (tag, props={}, ...kids) => { const e = Object.assign(document.createElement(tag), props); kids.forEach(k => e.append(k)); return e; };
+
+// ---------- sekmeler ----------
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b));
+  const tab = b.dataset.tab;
+  $('#history').classList.toggle('hidden', tab !== 'history');
+  if (tab === 'history') { $('#upload').classList.add('hidden'); $('#jobView').classList.add('hidden'); loadHistory(); return; }
+  mode = tab;
+  $('#dropTitle').textContent = {edit:'Ham çekimi buraya sürükleyin', reels:'Birden fazla reel içeren videoyu buraya sürükleyin',
+    youtube:'Yayınlayacağın videoyu buraya sürükleyin'}[mode];
+  $('#dropDesc').textContent = {
+    edit:'Konuşmalar yazıya dökülür; "burayı kes", "baştan alıyorum" gibi komutlar, tekrarlar ve uzun sessizlikler bulunur.',
+    reels:'Transkript, duraklamalar ve görüntü değişimleri (Claude vision) ile her reel ayrı parçaya bölünür; her birinin içindeki tekrarlar da temizlenir.',
+    youtube:'Video yazıya dökülür; Claude bölüm zaman damgaları, açıklama, hashtag\'ler, etiketler ve başlık önerileri hazırlar. Videoya dokunulmaz.'}[mode];
+  document.querySelectorAll('.cutopt').forEach(x => x.classList.toggle('hidden', mode === 'youtube'));
+  $('#ytOpts').classList.toggle('hidden', mode !== 'youtube');
+  $('#optDiarize').checked = mode !== 'youtube';
+  if (!job || job.mode !== mode) closeJob(); else { $('#upload').classList.add('hidden'); $('#jobView').classList.remove('hidden'); }
+});
+
+// ---------- sağlık ----------
+api('/api/health').then(h => {
+  const chip = (ok, txt) => el('span', {className:'chip ' + (ok ? 'ok':'bad'), textContent:txt});
+  $('#health').append(chip(h.ffmpeg,'ffmpeg'), chip(h.faster_whisper,'Whisper ' + h.whisper_model),
+    chip(h.claude, h.claude ? h.claude_label : 'Claude kapalı (API anahtarı veya Claude Code yok)'),
+    chip(h.diarization !== 'kapalı', 'Konuşmacı ayrımı: ' + h.diarization));
+  if (!h.claude) { $('#optClaude').checked = false; $('#optClaude').disabled = true; }
+});
+
+// ---------- yükleme ----------
+const drop = $('#drop');
+['dragenter','dragover'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.add('hover'); }));
+['dragleave','drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.remove('hover'); }));
+drop.addEventListener('drop', ev => ev.dataTransfer.files[0] && upload(ev.dataTransfer.files[0]));
+$('#file').onchange = e => e.target.files[0] && upload(e.target.files[0]);
+
+function upload(f) {
+  const fd = new FormData();
+  fd.append('file', f); fd.append('mode', mode);
+  fd.append('claude', $('#optClaude').checked); fd.append('silence', $('#optSilence').checked); fd.append('stutter', $('#optStutter').checked);
+  fd.append('diarize', $('#optDiarize').checked); fd.append('speakers', $('#optSpeakers').value);
+  if (mode === 'youtube') { fd.append('yt_extra', $('#ytExtraUp').value); fd.append('claude', true); }
+  const xhr = new XMLHttpRequest(); const bar = $('#upProg');
+  bar.classList.remove('hidden');
+  xhr.upload.onprogress = e => bar.firstElementChild.style.width = (e.loaded / e.total * 100) + '%';
+  xhr.onload = () => { bar.classList.add('hidden'); if (xhr.status < 300) openJob(JSON.parse(xhr.responseText).id); else alert(xhr.responseText); };
+  xhr.open('POST', '/api/jobs'); xhr.send(fd);
+}
+
+// ---------- iş ----------
+async function openJob(id) {
+  transcript = null;
+  job = await api(`/api/jobs/${id}`);
+  mode = job.mode;
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x.dataset.tab === mode));
+  $('#upload').classList.add('hidden'); $('#history').classList.add('hidden'); $('#jobView').classList.remove('hidden');
+  $('#editPanel').classList.toggle('hidden', mode !== 'edit');
+  $('#reelPanel').classList.toggle('hidden', mode !== 'reels');
+  $('#ytPanel').classList.toggle('hidden', mode !== 'youtube' && !job.youtube);
+  ytView = null; pendingYt = {}; drawYt();  // önceki işin açıklaması ekranda kalmasın
+  ['#previewWrap', '#markIn', '#markOut', '#addCut'].forEach(q => $(q).classList.toggle('hidden', mode === 'youtube'));
+  $('#jobName').textContent = job.original_name;
+  $('#player').src = `/api/jobs/${id}/source`;
+  ['Xml','Edl','Srt'].forEach(k => $('#ex' + k).href = `/api/jobs/${id}/export/${k.toLowerCase()}`);
+  render(); startPoll();
+}
+function closeJob() {
+  clearInterval(poll); job = null; $('#player').removeAttribute('src');
+  $('#jobView').classList.add('hidden'); $('#upload').classList.remove('hidden');
+}
+function startPoll() {
+  clearInterval(poll);
+  poll = setInterval(async () => {
+    if (!job) return;
+    const fresh = await api(`/api/jobs/${job.id}`);
+    const changed = fresh.status !== job.status;
+    job = fresh;
+    renderStatus();
+    if (changed || ['ready','done','error'].includes(job.status)) render();
+    if (['ready','done','error'].includes(job.status)) clearInterval(poll);
+  }, 1500);
+}
+function renderStatus() {
+  const busy = ['queued','running','rendering'].includes(job.status);
+  $('#jobProg').classList.toggle('hidden', !busy);
+  $('#jobProg').firstElementChild.style.width = ((job.progress || 0) * 100) + '%';
+  $('#jobMsg').textContent = job.message || '';
+  $('#jobErr').classList.toggle('hidden', job.status !== 'error');
+  $('#jobErr').textContent = job.error || '';
+  $('#renderBtn').disabled = $('#renderReels').disabled = busy;
+  const d = job.media?.duration;
+  $('#jobStats').innerHTML = d ? `Süre <b>${fmt(d)}</b>` + (job.kept_duration != null && mode === 'edit'
+    ? ` → <b>${fmt(job.kept_duration)}</b> (−${fmt(d - job.kept_duration)})` : '') : '';
+}
+async function render() {
+  renderStatus();
+  if (!job || !['ready','done'].includes(job.status)) return;
+  if (!transcript) transcript = await api(`/api/jobs/${job.id}/transcript`).catch(() => null);
+  drawTimeline(); drawTranscript(); drawSpeakers();
+  if (mode === 'edit') { drawFilters(); drawCuts(); drawEditOut(); }
+  else if (mode === 'reels') { drawReels(); drawReelOut(); }
+  if (mode === 'youtube' || job.youtube || job.youtube_error) { $('#ytPanel').classList.remove('hidden'); loadYt(); }
+}
+
+// ---------- zaman çizelgesi ----------
+function drawTimeline() {
+  const tl = $('#timeline'), d = job.media.duration;
+  tl.querySelectorAll('.blk').forEach(b => b.remove());
+  const items = mode === 'edit' ? job.cuts : mode === 'reels' ? job.reels : [];
+  items.forEach((c, i) => {
+    const b = el('div', {className: 'blk' + (c.enabled ? '' : ' off'), title: mode === 'edit' ? c.reason : c.title});
+    b.style.left = (c.start / d * 100) + '%'; b.style.width = Math.max(0.2, (c.end - c.start) / d * 100) + '%';
+    b.style.background = mode === 'edit' ? (COLORS[c.kind] || '#ef4b5a') : `hsl(${(i * 67) % 360} 70% 58%)`;
+    tl.insertBefore(b, $('#head'));
+  });
+}
+$('#timeline').onclick = e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  $('#player').currentTime = (e.clientX - r.left) / r.width * job.media.duration;
+};
+
+// ---------- oynatıcı ----------
+const player = $('#player');
+player.addEventListener('timeupdate', () => {
+  const t = player.currentTime;
+  if (job?.media) $('#head').style.left = (t / job.media.duration * 100) + '%';
+  $('#clock').textContent = fmt(t);
+  if (stopAt != null && t >= stopAt) { player.pause(); stopAt = null; return; }
+  if (mode === 'edit' && $('#preview').checked && stopAt == null && job?.cuts) {
+    const c = job.cuts.find(c => c.enabled && t >= c.start && t < c.end - 0.05);
+    if (c) player.currentTime = c.end;
+  }
+  const now = document.querySelector('.tr span.now'); now && now.classList.remove('now');
+  const seg = transcript?.segments.find(s => t >= s.start && t <= s.end);
+  seg && document.querySelector(`.tr span[data-id="${seg.id}"]`)?.classList.add('now');
+});
+function playRange(a, b) { stopAt = b; player.currentTime = Math.max(0, a); player.play(); }
+document.addEventListener('keydown', e => {
+  if (!job || ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  if (e.code === 'Space') { e.preventDefault(); player.paused ? player.play() : player.pause(); }
+  if (e.key === 'ArrowLeft') player.currentTime -= 2;
+  if (e.key === 'ArrowRight') player.currentTime += 2;
+  if (e.key.toLowerCase() === 'i') setMark('in');
+  if (e.key.toLowerCase() === 'o') setMark('out');
+});
+function setMark(which) {
+  if (which === 'in') markIn = player.currentTime; else markOut = player.currentTime;
+  const box = $('#markBox');
+  if (markIn != null && markOut != null && markOut > markIn) {
+    box.classList.remove('hidden');
+    box.style.left = (markIn / job.media.duration * 100) + '%';
+    box.style.width = ((markOut - markIn) / job.media.duration * 100) + '%';
+  }
+}
+$('#markIn').onclick = () => setMark('in');
+$('#markOut').onclick = () => setMark('out');
+$('#addCut').onclick = () => {
+  if (markIn == null || markOut == null || markOut <= markIn) return alert('Önce I ve O ile bir aralık işaretleyin.');
+  job.cuts.push({id:'u' + Date.now(), start:+markIn.toFixed(3), end:+markOut.toFixed(3), kind:'command',
+    reason:'Elle eklendi', text:'', confidence:1, enabled:true, source:'user'});
+  job.cuts.sort((a, b) => a.start - b.start); markIn = markOut = null; $('#markBox').classList.add('hidden');
+  saveCuts(); render();
+};
+$('#addReel').onclick = () => {
+  if (markIn == null || markOut == null || markOut <= markIn) return alert('Önce I ve O ile bir aralık işaretleyin.');
+  job.reels.push({id:'', start:+markIn.toFixed(3), end:+markOut.toFixed(3), title:'Yeni reel', hook:'', summary:'',
+    caption:'', hashtags:[], confidence:1, enabled:true, clean:true, source:'user'});
+  markIn = markOut = null; $('#markBox').classList.add('hidden');
+  saveReels(true);
+};
+
+// ---------- transkript ----------
+function drawTranscript() {
+  const box = $('#transcript'); box.innerHTML = '';
+  if (!transcript) return;
+  const cutAt = t => mode === 'edit' && job.cuts.some(c => c.enabled && c.kind !== 'silence' && t >= c.start && t <= c.end);
+  const ids = Object.keys(job.speakers || {});
+  let prevSpk = null;
+  transcript.segments.forEach(s => {
+    if (s.speaker && ids.length > 1 && s.speaker !== prevSpk) {
+      const tag = el('span', {className:'tag', textContent: spkName(s.speaker),
+        title:'Konuşmacıyı değiştirmek için tıkla (sıradaki kişi; Shift+tık: yeni kişi)'});
+      tag.style.background = spkColor(s.speaker);
+      tag.onclick = ev => { ev.stopPropagation(); cycleSpeaker(s, ev.shiftKey); };
+      box.append(tag);
+    }
+    prevSpk = s.speaker;
+    const sp = el('span', {textContent: s.text + ' ', className: cutAt((s.start + s.end) / 2) ? 'cut' : ''});
+    sp.dataset.id = s.id; sp.title = fmt(s.start) + (s.speaker ? ' · ' + spkName(s.speaker) : '');
+    sp.onclick = () => { player.currentTime = s.start; };
+    box.append(sp);
+  });
+}
+
+// ---------- konuşmacılar ----------
+const SPK_COLORS = ['#4c8dff','#2fbf71','#ff8f3d','#c084fc','#e6c34a','#ff5fa2','#33c6d6','#a3a3a3'];
+let spkTimer = null, turns = [], audioCtx = null, gainNode = null;
+const spkColor = id => { const s = job?.speakers?.[id]; const i = s?.color ?? (parseInt(String(id).slice(1)) - 1); return SPK_COLORS[(i >= 0 ? i : 0) % SPK_COLORS.length]; };
+const spkName = id => job?.speakers?.[id]?.name || id;
+const dbLabel = s => s.mute ? 'kapalı' : (s.gain_db > 0 ? '+' : '') + Number(s.gain_db).toFixed(0) + ' dB';
+
+function computeTurns() {
+  // Sunucudaki timeline_turns ile aynı kural: farklı kişiler arası boşluk ortadan bölünür
+  turns = [];
+  if (!transcript) return;
+  const segs = transcript.segments.filter(s => s.speaker);
+  segs.forEach((s, k) => {
+    const last = turns[turns.length - 1];
+    if (last && last.spk === s.speaker) { last.end = s.end; return; }
+    turns.push({start: s.start, end: s.end, spk: s.speaker});
+  });
+  turns.forEach((t, k) => {
+    t.from = k === 0 ? 0 : (turns[k - 1].end + t.start) / 2;
+    t.to = k === turns.length - 1 ? job.media.duration : (t.end + turns[k + 1].start) / 2;
+  });
+}
+function drawSpeakers() {
+  const sp = job.speakers || {}, ids = Object.keys(sp);
+  $('#spkBox').classList.toggle('hidden', !ids.length);
+  computeTurns();
+  const lane = $('#spkLane'); lane.innerHTML = '';
+  if (ids.length > 1) turns.forEach(t => {
+    const i = el('i', {}); i.style.left = (t.from / job.media.duration * 100) + '%';
+    i.style.width = ((t.to - t.from) / job.media.duration * 100) + '%'; i.style.background = spkColor(t.spk);
+    i.style.opacity = sp[t.spk]?.mute ? .25 : .9; lane.append(i);
+  });
+  const d = job.diarization || {};
+  $('#spkNote').textContent = ids.length ? ` ${ids.length} kişi` + (d.backend === 'pyannote' ? ' · pyannote' : d.backend === 'light' ? ' · hafif model' : '') + (d.note ? ' · ' + d.note : '') : '';
+  const list = $('#spkList'); list.innerHTML = '';
+  ids.forEach(id => {
+    const s = sp[id];
+    const name = el('input', {type:'text', value: s.name, className:'nm'}); name.onchange = () => { s.name = name.value; saveSpeakers({[id]: {name: name.value}}); drawTranscript(); };
+    const val = el('span', {className:'db', textContent: dbLabel(s)});
+    const slider = el('input', {type:'range', min:-24, max:12, step:1, value: s.gain_db, className:'sl', title:'Ses (dB)'});
+    slider.oninput = () => { s.gain_db = +slider.value; val.textContent = dbLabel(s); };
+    slider.onchange = () => saveSpeakers({[id]: {gain_db: +slider.value}});
+    const mute = el('button', {className:'btn mu', textContent: s.mute ? '🔇' : '🔊', title: s.mute ? 'Sesi aç' : 'Sessize al'});
+    mute.onclick = () => { s.mute = !s.mute; saveSpeakers({[id]: {mute: s.mute}}); drawSpeakers(); };
+    const play = el('button', {className:'btn pl', textContent:'▶', title:'Bu kişiden örnek dinle'});
+    play.onclick = () => playRange(s.sample[0], s.sample[1]);
+    const dot = el('span', {className:'dot'}); dot.style.background = spkColor(id);
+    const info = el('span', {className:'t inf', textContent: `${fmt(s.duration)}${s.rms_db != null ? ' · ' + s.rms_db + ' dBFS' : ''}`, title:'Konuşma süresi · ortalama seviye'});
+    list.append(el('div', {className: 'spkrow' + (s.mute ? ' muted' : '')}, dot, name, info, play, slider, val, mute));
+  });
+}
+let pendingSpk = {};
+function saveSpeakers(changes) {
+  // Kısa aralıklı değişiklikler birleştirilir; hiçbiri kaybolmaz
+  for (const [id, ch] of Object.entries(changes)) pendingSpk[id] = {...(pendingSpk[id] || {}), ...ch};
+  clearTimeout(spkTimer);
+  spkTimer = setTimeout(async () => {
+    const body = pendingSpk; pendingSpk = {};
+    job = await api(`/api/jobs/${job.id}/speakers`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(body)});
+    drawSpeakers();
+  }, 150);
+}
+async function cycleSpeaker(seg, makeNew) {
+  const ids = Object.keys(job.speakers || {});
+  const next = makeNew ? 'new' : ids[(ids.indexOf(seg.speaker) + 1) % ids.length];
+  job = await api(`/api/jobs/${job.id}/segments/${seg.id}/speaker`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify({speaker: next})});
+  transcript = await api(`/api/jobs/${job.id}/transcript`);
+  drawTranscript(); drawSpeakers();
+}
+$('#eqBtn').onclick = async () => { job = await api(`/api/jobs/${job.id}/speakers/equalize`, {method:'POST'}); drawSpeakers(); };
+$('#resetBtn').onclick = () => {
+  const ch = {}; Object.keys(job.speakers || {}).forEach(id => { ch[id] = {gain_db: 0, mute: false}; job.speakers[id].gain_db = 0; job.speakers[id].mute = false; });
+  saveSpeakers(ch); drawSpeakers();
+};
+$('#rediarBtn').onclick = async () => {
+  await api(`/api/jobs/${job.id}/speakers/rediarize`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({speakers: +$('#spkCount').value})});
+  transcript = null; job.status = 'running'; renderStatus(); startPoll();
+};
+// Canlı önizleme: oynatıcının sesi Web Audio kazanç düğümünden geçer
+function ensureAudio() {
+  if (audioCtx) { audioCtx.resume(); return; }
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = audioCtx.createGain();
+    audioCtx.createMediaElementSource(player).connect(gainNode).connect(audioCtx.destination);
+    requestAnimationFrame(gainLoop);
+  } catch (e) { console.warn('Web Audio yok, önizlemede ses ayarı duyulmaz', e); audioCtx = null; }
+}
+function gainLoop() {
+  if (gainNode && job?.speakers) {
+    const t = player.currentTime, tr = turns.find(x => t >= x.from && t < x.to);
+    const s = tr && job.speakers[tr.spk];
+    const g = !s ? 1 : s.mute ? 0 : Math.pow(10, s.gain_db / 20);
+    gainNode.gain.setTargetAtTime(g, audioCtx.currentTime, 0.015);
+  }
+  requestAnimationFrame(gainLoop);
+}
+player.addEventListener('play', ensureAudio);
+
+// ---------- YouTube açıklaması ----------
+let ytView = null, ytTimer = null;
+const LS = {get: k => { try { return localStorage.getItem(k) || ''; } catch { return ''; } },
+            set: (k, v) => { try { localStorage.setItem(k, v); } catch {} }};
+$('#ytExtraUp').value = LS.get('ytExtra');
+$('#ytExtraUp').onchange = () => LS.set('ytExtra', $('#ytExtraUp').value);
+const ytFmt = t => { t = Math.max(0, Math.floor(t)); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, sec = t % 60;
+  const long = (ytView?.duration || 0) >= 3600; return (long || h) ? `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; };
+const ytParse = v => { const p = String(v).trim().split(':').map(Number); if (p.some(isNaN)) return null; return p.reduce((a, x) => a * 60 + x, 0); };
+async function copyText(txt, btn) {
+  try { await navigator.clipboard.writeText(txt); }
+  catch { const t = el('textarea', {value: txt}); document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); }
+  if (btn) { const o = btn.textContent; btn.textContent = 'Kopyalandı ✓'; setTimeout(() => btn.textContent = o, 1400); }
+}
+async function loadYt() {
+  ytView = await api(`/api/jobs/${job.id}/youtube`).catch(() => null);
+  drawYt();
+}
+function drawYt() {
+  const has = !!ytView?.youtube;
+  $('#ytBody').classList.toggle('hidden', !has);
+  $('#ytCopy').disabled = !has; $('#ytDl').classList.toggle('hidden', !has);
+  $('#ytDl').href = `/api/jobs/${job.id}/youtube/download`;
+  $('#ytSrc').textContent = mode === 'edit' ? 'Zamanlar kurgulanmış videoya göre. Kesimleri değiştirirsen bölüm zamanları kendiliğinden güncellenir.' : '';
+  $('#ytEmpty').textContent = has ? '' : ytView?.error ? 'Açıklama oluşturulamadı: ' + ytView.error + ' — aşağıdan tekrar deneyin.'
+    : ['running','queued'].includes(job.status) ? 'Hazırlanıyor…' : 'Henüz açıklama yok.';
+  if (!has && ytView?.error) { $('#ytBody').classList.remove('hidden'); }
+  drawYtMarkers();
+  if (!has) return;
+  const yt = ytView.youtube;
+  // başlıklar
+  const tl = $('#ytTitles'); tl.innerHTML = '';
+  (yt.titles || []).forEach(t => { const r = el('div', {className:'titlerow', title:'Kopyala'}, el('span', {textContent: t}), el('em', {textContent: t.length + ' kr'}));
+    r.style.cursor = 'pointer'; r.onclick = () => copyText(t, r.querySelector('em')); tl.append(r); });
+  // bölümler
+  const box = $('#ytChapters'); box.innerHTML = '';
+  const shown = new Set((ytView.text.match(/^(\d+:)?\d{2}:\d{2} .+$/gm) || []).map(l => l.slice(l.indexOf(' ') + 1)));
+  yt.chapters.forEach((c, i) => {
+    const time = el('input', {type:'text', className:'time', value: c.t == null ? '--' : ytFmt(i === 0 ? 0 : c.t), title:'Yayın zamanı (dk:sn)'});
+    const title = el('input', {type:'text', value: c.title});
+    const play = el('button', {className:'btn', textContent:'▶', title:'Bu bölümün başını izle'});
+    play.onclick = () => { player.currentTime = c.start; player.play(); };
+    const del = el('button', {className:'btn', textContent:'✕'});
+    const row = el('div', {className: 'chrow' + (shown.has(c.title) ? '' : ' bad'), title: shown.has(c.title) ? '' : 'Bu bölüm YouTube kurallarına uymadığı için açıklamaya eklenmedi'}, time, title, play, del);
+    const commit = () => {
+      const t = ytParse(time.value); if (t == null) { time.value = ytFmt(c.t || 0); return; }
+      c.t = t; c.title = title.value; saveYt({chapters: yt.chapters.map(x => ({t: x.t, start: x.start, title: x.title}))});
+    };
+    time.onchange = commit; title.onchange = commit;
+    del.onclick = () => { yt.chapters.splice(i, 1); saveYt({chapters: yt.chapters.map(x => ({t: x.t, start: x.start, title: x.title}))}, true); };
+    box.append(row);
+  });
+  if (document.activeElement?.id !== 'ytIntro') $('#ytIntro').value = yt.intro || '';
+  if (document.activeElement?.id !== 'ytExtra') $('#ytExtra').value = yt.extra || '';
+  if (document.activeElement?.id !== 'ytTags') $('#ytTags').value = (yt.hashtags || []).join(' ');
+  if (document.activeElement?.id !== 'ytKeywords') $('#ytKeywords').value = (yt.tags || []).join(', ');
+  $('#ytPreview').textContent = ytView.text;
+  $('#ytLen').textContent = `— ${ytView.text.length} / 5000 karakter`;
+  const w = $('#ytWarn'); w.innerHTML = '';
+  (ytView.warnings || []).forEach(x => w.append(el('div', {className:'warn', textContent: '⚠ ' + x})));
+}
+function drawYtMarkers() {
+  const tl = $('#timeline'); tl.querySelectorAll('.chmark').forEach(x => x.remove());
+  if (!ytView?.youtube || !job?.media) return;
+  let lastLabel = -1;
+  ytView.youtube.chapters.forEach(c => {
+    const pos = c.start / job.media.duration;
+    const showLabel = mode === 'youtube' && pos - lastLabel > 0.12;  // yakın etiketler üst üste binmesin
+    if (showLabel) lastLabel = pos;
+    const m = el('div', {className:'chmark', title: c.title}, el('b', {textContent: showLabel ? c.title : ''}));
+    m.style.left = (c.start / job.media.duration * 100) + '%'; tl.insertBefore(m, $('#head'));
+  });
+}
+let pendingYt = {};
+function saveYt(changes, redrawNow) {
+  Object.assign(pendingYt, changes);  // art arda gelen düzenlemeler birleştirilir, hiçbiri kaybolmaz
+  clearTimeout(ytTimer);
+  ytTimer = setTimeout(async () => {
+    const body = pendingYt; pendingYt = {};
+    ytView = await api(`/api/jobs/${job.id}/youtube`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(body)});
+    drawYt();
+  }, redrawNow ? 0 : 250);
+}
+$('#ytIntro').onchange = () => saveYt({intro: $('#ytIntro').value});
+$('#ytExtra').onchange = () => { saveYt({extra: $('#ytExtra').value}); LS.set('ytExtra', $('#ytExtra').value); };
+$('#ytTags').onchange = () => saveYt({hashtags: $('#ytTags').value.split(/[\s,]+/).filter(Boolean)});
+$('#ytKeywords').onchange = () => saveYt({tags: $('#ytKeywords').value.split(',').map(x => x.trim()).filter(Boolean)});
+$('#ytCopy').onclick = () => ytView?.text && copyText(ytView.text, $('#ytCopy'));
+$('#ytCopyTags').onclick = () => copyText($('#ytKeywords').value, $('#ytCopyTags'));
+$('#ytAddCh').onclick = () => {
+  const yt = ytView.youtube;
+  yt.chapters.push({t: null, start: +player.currentTime.toFixed(2), title: 'Yeni bölüm'});
+  saveYt({chapters: yt.chapters.map(x => ({t: x.t, start: x.start, title: x.title}))}, true);
+};
+async function startYtGeneration(instruction) {
+  await api(`/api/jobs/${job.id}/youtube/generate`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({instruction})});
+  job.status = 'running'; ytView = null; drawYt(); $('#ytPanel').classList.remove('hidden'); $('#ytEmpty').textContent = 'Hazırlanıyor…';
+  renderStatus(); startPoll();
+}
+$('#ytRegen').onclick = () => startYtGeneration($('#ytInstr').value);
+$('#ytFromEdit').onclick = async () => {
+  clearTimeout(saveTimer);
+  await api(`/api/jobs/${job.id}/cuts`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.cuts)});
+  startYtGeneration('');
+};
+
+// ---------- kesimler ----------
+function drawFilters() {
+  const f = $('#filters'); f.innerHTML = '';
+  const counts = {};
+  job.cuts.forEach(c => counts[c.kind] = (counts[c.kind] || 0) + 1);
+  Object.keys(counts).forEach(k => {
+    const cb = el('input', {type:'checkbox', checked: !hiddenKinds.has(k)});
+    cb.onchange = () => { cb.checked ? hiddenKinds.delete(k) : hiddenKinds.add(k); drawCuts(); };
+    const lab = el('label', {}, cb, el('span', {className:'badge', textContent: KIND_TR[k] || k}), `${counts[k]}`);
+    lab.querySelector('.badge').style.background = COLORS[k] || '#ccc';
+    f.append(lab);
+  });
+}
+function drawCuts() {
+  const list = $('#cutList'); list.innerHTML = '';
+  const on = job.cuts.filter(c => c.enabled).length;
+  $('#cutCount').textContent = `${on}/${job.cuts.length} etkin`;
+  job.cuts.forEach(c => {
+    if (hiddenKinds.has(c.kind)) return;
+    const cb = el('input', {type:'checkbox', checked: c.enabled});
+    cb.onchange = () => { c.enabled = cb.checked; saveCuts(); render(); };
+    const inS = el('input', {value: fmt(c.start)}), inE = el('input', {value: fmt(c.end)});
+    const upd = () => { const a = parse(inS.value), b = parse(inE.value); if (b > a) { c.start = a; c.end = b; c.source = c.source === 'rule' ? 'user' : c.source; saveCuts(); render(); } };
+    inS.onchange = inE.onchange = upd;
+    const badge = el('span', {className:'badge', textContent: KIND_TR[c.kind] || c.kind});
+    badge.style.background = COLORS[c.kind] || '#ccc';
+    const play = el('button', {className:'btn', textContent:'▶', title:'Kesilen yeri dinle'});
+    play.onclick = () => playRange(c.start - 1.5, c.end + 1);
+    const del = el('button', {className:'btn', textContent:'✕', title:'Listeden sil'});
+    del.onclick = () => { job.cuts = job.cuts.filter(x => x !== c); saveCuts(); render(); };
+    const item = el('div', {className: 'item' + (c.enabled ? '' : ' off')},
+      el('div', {className:'top'}, cb, badge, el('span', {className:'t'}, inS, ' – ', inE), play, del,
+        el('span', {className:'conf', textContent: `${c.source === 'claude' ? 'Claude · ' : ''}%${Math.round(c.confidence * 100)}`})),
+      el('div', {className:'reason', textContent: c.reason}));
+    if (c.text) item.append(el('div', {className:'quote', textContent: c.text}));
+    list.append(item);
+  });
+}
+function setAll(v) { job.cuts.forEach(c => { if (!hiddenKinds.has(c.kind)) c.enabled = v; }); saveCuts(); render(); }
+function saveCuts() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    job = await api(`/api/jobs/${job.id}/cuts`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.cuts)});
+    job = await api(`/api/jobs/${job.id}`); renderStatus();
+    if (ytView?.youtube) loadYt();  // kesimler değişince bölüm zamanları da değişir
+  }, 400);
+}
+$('#renderBtn').onclick = async () => {
+  clearTimeout(saveTimer);
+  await api(`/api/jobs/${job.id}/cuts`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.cuts)});
+  await api(`/api/jobs/${job.id}/render`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({vertical: $('#editVertical').value || null})});
+  job.status = 'rendering'; renderStatus(); startPoll();
+};
+function drawEditOut() {
+  const o = job.outputs || {}, box = $('#editOut'); box.innerHTML = '';
+  const link = (name, label) => box.append(el('a', {href:`/api/jobs/${job.id}/files/${encodeURIComponent(name)}`, textContent: label, download: name}));
+  if (o.video) link(o.video, '⬇ Kurgulanmış video');
+  if (o.xml) link(o.xml, 'XML'); if (o.edl) link(o.edl, 'EDL'); if (o.srt) link(o.srt, 'SRT');
+}
+
+// ---------- reels ----------
+function drawReels() {
+  const list = $('#reelList'); list.innerHTML = '';
+  $('#reelCount').textContent = `${job.reels.length} reel`;
+  $('#reelMethod').textContent = {claude:'Claude (transkript + görüntü) ile bölündü',
+    heuristic:'Sezgisel bölme — Claude bağlı değil, sınırları kontrol edin',
+    'heuristic-fallback':'Claude hatası nedeniyle sezgisel bölme yapıldı'}[job.reels_method] || '';
+  job.reels.forEach((r, i) => {
+    const cb = el('input', {type:'checkbox', checked: r.enabled}); cb.onchange = () => { r.enabled = cb.checked; saveReels(); };
+    const title = el('input', {className:'title', value: r.title}); title.onchange = () => { r.title = title.value; saveReels(); };
+    const inS = el('input', {value: fmt(r.start)}), inE = el('input', {value: fmt(r.end)});
+    inS.onchange = inE.onchange = () => { const a = parse(inS.value), b = parse(inE.value); if (b > a) { r.start = a; r.end = b; saveReels(true); } };
+    const clean = el('input', {type:'checkbox', checked: r.clean}); clean.onchange = () => { r.clean = clean.checked; saveReels(); };
+    const play = el('button', {className:'btn', textContent:'▶ İzle'}); play.onclick = () => playRange(r.start, r.end);
+    const del = el('button', {className:'btn', textContent:'✕'}); del.onclick = () => { job.reels.splice(i, 1); saveReels(true); };
+    const cap = el('textarea', {rows:3, value: r.caption + (r.hashtags?.length ? '\n' + r.hashtags.join(' ') : ''), placeholder:'Açıklama ve hashtag'});
+    cap.onchange = () => { const lines = cap.value.split('\n'); const tags = lines.filter(l => l.trim().startsWith('#')).join(' ');
+      r.caption = lines.filter(l => !l.trim().startsWith('#')).join('\n').trim(); r.hashtags = tags.split(/\s+/).filter(Boolean); saveReels(); };
+    const dot = el('span', {className:'badge', textContent: r.id || 'yeni'}); dot.style.background = `hsl(${(i * 67) % 360} 70% 58%)`;
+    const item = el('div', {className:'item reel' + (r.enabled ? '' : ' off')},
+      el('div', {className:'top'}, cb, dot, title),
+      el('div', {className:'row', style:'margin-top:6px'}, el('span', {className:'t'}, inS, ' – ', inE, ` (${Math.round(r.end - r.start)} sn)`),
+        el('label', {className:'t'}, clean, ' içini temizle'), play, del),
+      r.hook ? el('div', {className:'reason', textContent: '🎣 ' + r.hook}) : '',
+      r.notes ? el('div', {className:'reason', textContent: r.notes}) : '',
+      cap);
+    list.append(item);
+  });
+}
+function saveReels(redraw) {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    job = await api(`/api/jobs/${job.id}/reels`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.reels)});
+    if (redraw) render(); else drawTimeline();
+  }, redraw ? 0 : 400);
+}
+$('#renderReels').onclick = async () => {
+  clearTimeout(saveTimer);
+  await api(`/api/jobs/${job.id}/reels`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.reels)});
+  await api(`/api/jobs/${job.id}/reels/render`, {method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({ids: job.reels.filter(r => r.enabled).map(r => r.id), vertical: $('#reelVertical').value || null})});
+  job.status = 'rendering'; renderStatus(); startPoll();
+};
+function drawReelOut() {
+  const o = job.outputs || {}, box = $('#reelOut'); box.innerHTML = '';
+  Object.entries(o.reels || {}).forEach(([id, f]) => {
+    box.append(el('a', {href:`/api/jobs/${job.id}/files/${encodeURIComponent(f.video)}`, textContent:`⬇ ${id}.mp4`, download:f.video}),
+      el('a', {href:`/api/jobs/${job.id}/files/${encodeURIComponent(f.srt)}`, textContent:'srt', download:f.srt}));
+  });
+  if (o.captions) box.append(el('a', {href:`/api/jobs/${job.id}/files/${encodeURIComponent(o.captions)}`, textContent:'⬇ Açıklamalar (md)', download:o.captions}));
+}
+
+// ---------- geçmiş ----------
+async function loadHistory() {
+  const rows = await api('/api/jobs'), tb = $('#jobRows'); tb.innerHTML = '';
+  if (!rows.length) tb.append(el('tr', {}, el('td', {textContent:'Henüz iş yok.'})));
+  rows.forEach(j => {
+    const a = el('a', {textContent: j.original_name}); a.onclick = () => openJob(j.id);
+    tb.append(el('tr', {}, el('td', {}, a), el('td', {textContent: j.mode === 'edit' ? 'Edit' : 'Reels'}),
+      el('td', {textContent: j.status}), el('td', {className:'t', textContent: new Date(j.created_at * 1000).toLocaleString('tr-TR')})));
+  });
+}
+</script>
+</body>
+</html>

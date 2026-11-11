@@ -1,0 +1,7 @@
+.venv/
+.env
+data/
+dist/
+__pycache__/
+*.pyc
+skills/*/scripts/vedit/

@@ -1,0 +1,11 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+faster-whisper>=1.0.3
+# Konuşmacı ayrımı (faster-whisper ile zaten gelir, açıkça yazıldı)
+onnxruntime>=1.14
+huggingface_hub>=0.20
+numpy>=1.24
+# İsteğe bağlı, en yüksek doğruluk: pyannote.audio (torch gerektirir, ~2 GB)
+# Testler için
+pytest>=8
