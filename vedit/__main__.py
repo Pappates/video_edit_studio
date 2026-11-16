@@ -1,7 +1,7 @@
 """Komut satırı.
 
     python -m vedit edit  video.mp4 [--render] [--no-claude] [--no-silence]
-    python -m vedit reels video.mp4 [--render] [--vertical crop|blur|none]
+    python -m vedit reels video.mp4 [--render] [--vertical crop|blur|none] [--captions bold] [--visuals]
     python -m vedit detect transcript.json           # sadece transkriptten kesim listesi
 
 Sonuçlar data/jobs/<id>/ altına yazılır; arayüzde de aynı iş görünür.
@@ -33,8 +33,20 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--render", action="store_true", help="Analizden sonra onaysız render et")
         p.add_argument("--no-claude", action="store_true")
         p.add_argument("--no-silence", action="store_true")
-        p.add_argument("--vertical", default="crop" if name == "reels" else "none",
-                       choices=["crop", "blur", "none"])
+        p.add_argument("--vertical", default="faces_top" if name == "reels" else "none",
+                       choices=(["faces_top", "game_top", "game_full"] if name == "reels" else []) + ["crop", "blur", "none"],
+                       help="faces_top: yüzler üstte, oyun altta · game_top: oyun üstte · game_full: oyun büyük, "
+                            "yüzler küçük · crop: ortadan kırp · blur: bulanık arka plan")
+        if name == "reels":
+            p.add_argument("--captions", default="none", choices=["bold", "karaoke", "minimal", "none"],
+                           help="Videoya gömülü, kelime kelime vurgulu altyazı")
+            p.add_argument("--visuals", action="store_true",
+                           help="Konuya göre görselleri bul (Claude + Wikipedia/Pexels) ve videoya ekle")
+            p.add_argument("--visual-pos", default="top", choices=["top", "center", "full"])
+            p.add_argument("--tighten", default="medium", choices=["light", "medium", "aggressive", "off"],
+                           help="Bölündükten sonra her reel'i kendi içinde kısalt")
+            p.add_argument("--max-reels", type=int, default=0,
+                           help="İlk N reel bulununca dur (uzun videoda hızlı test). 0 = videonun hepsi")
 
     d = sub.add_parser("detect")
     d.add_argument("transcript")
@@ -53,7 +65,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"\nToplam: {dur:.1f} sn → {kept:.1f} sn")
         return 0
 
-    opts = {"claude": not a.no_claude, "silence": not a.no_silence}
+    opts = {"claude": not a.no_claude, "silence": not a.no_silence,
+            "max_reels": max(0, getattr(a, "max_reels", 0)),
+            "tighten": "" if getattr(a, "tighten", "off") == "off" else a.tighten}
     job = pipeline.create_job(a.video, a.cmd, options=opts)
     print(f"İş: {job.id}")
     pipeline.analyze(job.id)
@@ -73,8 +87,17 @@ def main(argv: list[str] | None = None) -> int:
     else:
         for r in job.reels:
             print(f"  {r.id} {r.start:8.2f}-{r.end:8.2f} ({r.duration:.0f} sn) {r.title}")
+        if a.visuals:
+            pipeline.find_visuals(job.id)
+            _printer(job.id)()
+            for r in pipeline.Job(job.id).reels:
+                for v in r.visuals:
+                    print(f"    {r.id} {v['start']:8.2f} {('#' + str(v['rank'])) if v.get('rank') else '  '} "
+                          f"{v['label']} — {v.get('source') or 'bulunamadı'}")
         if a.render:
-            pipeline.render_reels(job.id, vertical=None if a.vertical == "none" else a.vertical)
+            pipeline.render_reels(job.id, vertical=None if a.vertical == "none" else a.vertical,
+                                  style={"captions": None if a.captions == "none" else a.captions,
+                                         "visuals": a.visuals, "visual_pos": a.visual_pos})
     _printer(job.id)()
     print(f"Çıktılar: {job.out_dir}")
     return 0

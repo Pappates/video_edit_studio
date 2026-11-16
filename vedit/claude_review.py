@@ -22,7 +22,7 @@ Görevin yayınlanacak videodan nelerin çıkarılması gerektiğine karar verme
 1. command  : Konuşmacının kurgu komutu verdiği yer ("burayı kes", "şurayı keselim") ve komutun işaret ettiği hatalı kısım.
 2. retake   : "Baştan alıyorum", "tekrar alalım" gibi denemeler. Başarısız deneme + komut çıkar, SON deneme kalır.
 3. repeat   : Aynı cümlenin/fikrin birden fazla kez söylenmesi (kelimeler farklı olsa da). En iyi/son hali kalır.
-4. chatter  : Çekim dışı muhabbet: kamera/ses kontrolü, "hazır mısın", "kaydediyor mu", ekip arası konuşmalar, kahkaha ve dağılmalar.
+4. chatter  : Çekim dışı muhabbet: kamera/ses kontrolü, "kaydediyor mu", çekime başlamadan önceki "hazır mısın", ekip arası konuşmalar, dağılmalar.
 
 Segmentlerde "S1:", "S2:" gibi etiketler varsa konuşmacıyı gösterir. Kamera arkasındaki kişinin kısa
 yönlendirmeleri ("tamam", "bir daha", "kamera açık") çoğunlukla chatter'dır; ama röportaj/sohbet
@@ -30,6 +30,11 @@ formatında karşı tarafın soruları içeriğin parçasıdır.
 
 Çıkarılmayacaklar: konunun parçası olan doğal tekrarlar ve vurgular ("tekrar ediyorum, bu çok önemli"),
 özet/kapanış cümleleri, içerik içindeki esprili ama konuyla ilgili diyaloglar. Emin değilsen confidence'ı düşük ver.
+
+OYUN/ETKİNLİK İÇERİĞİ: Kayıtta bir oyun oynanıyorsa (tahmin, quiz, Frekans/Wavelength gibi) oyun içi
+konuşmalar chatter DEĞİLDİR: "sola doğru", "biraz daha", "oralar", "yeterli" (ibre/yön tarifi), oyuncu/ipucu
+söyleme, kategori duyurusu ("yeni kategori", "iyi şutör kötü şutör"), "hazır mısın", "bakma / bakmayacağım"
+(oyun kuralı), tahmin ve tepkiler oyunun kendisidir. Bunları chatter olarak işaretleme.
 
 Yalnızca JSON döndür."""
 

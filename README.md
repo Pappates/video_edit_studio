@@ -54,6 +54,97 @@ Arayüz: http://localhost:8000
 Reels sekmesinde her reel'in başlığı, sınırları, açıklaması düzenlenebilir; "içini temizle" reel içindeki
 tekrar ve sessizlikleri de keser. Dikey format: ortadan kırp veya bulanık arka plan.
 
+### Reel sınırlarını elle işaretleme (kurgu şeridi)
+
+Yüklerken **Reel sınırları: Ben işaretleyeceğim** (varsayılan) seçilirse otomatik bölme yapılmaz; oynatıcının
+altındaki Shotcut benzeri **kurgu şeridinde** (zaman cetveli, küçük resimler, ses dalgası) sınırları sen
+belirlersin. Video yazıya dökülürken de işaretlemeye başlayabilirsin.
+
+| Tuş | İş |
+|---|---|
+| **S** | Oynatıcının konumundan böl. Art arda iki S: aradaki parça reel olur (reel başı → reel sonu) |
+| **R** | Seçili parçayı reel yap / reel'likten çıkar |
+| **Delete** | Seçili parçayı at (reel değil) |
+| **, / .** | 1 kare geri / ileri · **+ / −** yakınlaştır |
+
+Parçaya tıkla: seç ve oraya git · kırmızı çizgiyi sürükle: sınırı kaydır · **⇥ Birleştir**: çizgiyi kaldır.
+İşaretler anında kaydedilir. **📝 Reels'i hazırla**: işaretli reels için Claude başlık/kanca/Instagram
+açıklaması yazar ve seçilen seviyede kısaltır (sınırlara dokunmaz). Sonrası aynı: görseller, yerleşim, render.
+"Otomatik (Claude)" seçilirse eski davranış (Claude böler); şerit yine görünür, sınırlar elle düzeltilebilir.
+
+**Bitiş kontrolü:** Bölmeden sonra Claude her reel'in bitişine bir kez daha bakar (bitişten sonraki ~2,5 dk'lık
+transkript + oyun ekranının kareleri): oyunlarda turlar arası kategori değişimi yeni reel sayılmaz, reel
+bitiş ekranıyla ("Başardınız", skor tamamlandı) ve son tepkilerle biter; "bir tane daha oynayalım mı" dışarıda
+kalır. Mevcut bir işte her reel'deki **⏹ Bitişi kontrol et** ile aynı kontrol tek tıkla yapılır.
+
+**Çekimde söylenen işaretler:** "1. reel", "ikinci reel", "reel 3", "yeni reel", "sıradaki reele geçiyoruz",
+"bir reel daha" gibi işaretler kesin reel sınırı sayılır ve işaret sözleri reel'den kesilir (önündeki
+"ay olmadı", "tamam şimdi" ve arkasındaki "tekrar", "baştan alıyorum" gibi sözlerle birlikte).
+
+**Yeniden çekilen reel:** Aynı numara tekrar söylenirse ("1. reel" bozuldu → "1. reel tekrar") son deneme
+seçili gelir; önceki denemeler silinmez, **kapalı** gelir ve "⟲ Önceki deneme" notu düşülür — istersen
+kutucuğu işaretleyip onu kullanırsın. "Kaç reel?" modunda önceki denemeler sayılmaz; durmadan önce son
+reel'in 2 dakika arkasına da bakılır ki yeniden çekim kaçmasın. Numarasız "yeni reel" işaretlerinde
+tekrarı ancak Claude içerikten anlayabilir. Tek başına "bir reel çekelim",
+"bu reels içerikleri", "Real Madrid" işaret sayılmaz (1 için "1. reel", "birinci reel" ya da "ilk reel" deyin).
+
+**Uzun videoda hızlı deneme — "Kaç reel?":** Reels sekmesinde yüklemeden önce "İlk 2 reel" gibi bir sayı
+seçersen video baştan ~10 dakikalık parçalar halinde yazıya dökülür ve her parça reels'e bölünür; o kadar
+tam reel bulununca Whisper durur, videonun geri kalanı işlenmez. Parça sonunda yarım kalan reel sayılmaz,
+bir sonraki parçada bütün olarak bulunur. "Videonun hepsine bak" eskisi gibi tüm videoyu işler.
+Komut satırında: `--max-reels 2`.
+
+### Reels: dikey yerleşim (oyun + yüzler)
+
+Yatay kayıtta (ör. Riverside: solda ekran paylaşımı, sağda kameralar) ortadan 9:16 kırpmak oyunun yarısını
+ve yüzleri keser. Bunun yerine kayıt bölgelere ayrılıp yeniden dizilir:
+
+| Seçenek | Görünüm |
+|---|---|
+| **Yüzler üstte, oyun altta** (önerilen) | Kameralar üstte yan yana, oyun altta; Instagram'ın alt yazı/buton alanı oyunun boş alt kısmına denk gelir |
+| Oyun üstte, yüzler altta | Oyun büyük üstte, kameralar altta yan yana |
+| Oyun tam boy, yüzler küçük | Oyun ekranın ~%70'i, kameralar altta çerçeveli kutular |
+
+Bölgeler analizde otomatik bulunur: Claude bir kareye bakıp oyunu (tarayıcı/görev çubuğu hariç) ve her
+kamerayı işaretler; Claude yoksa görüntü analizi kamera sütununu ve ekrandaki oyun kartını bulur.
+**⚙ Bölgeler ve önizleme** ile kutuları görüp sürükleyerek düzeltebilir, 9:16 önizlemeyi render etmeden
+görebilirsin. Altyazı ve görsel kartları yerleşime göre konur (yüzlerin üstüne binmez). Tek kamera varsa
+yüz şeridi tek geniş kutu olur. Komut satırı: `--vertical faces_top|game_top|game_full|crop|blur|none`.
+
+### Reels: kendi içinde kısaltma
+
+Konu konu bölündükten sonra her reel ayrıca kısaltılır (yüklemede "Reel'i kısalt": Kapalı · Hafif · **Orta** ·
+Agresif). Claude reel'in kalan transkriptini başlığı, kancası ve reel'den 3 kareyle okur (ekranda oyun
+varsa yön tarifleri/hamleler oyunun parçası sayılır; isteğe bağlı **içerik notu** ile bağlam verilebilir),
+hikâyeyi bozmadan keser: kategori
+yazma/değiştirme, kural açıklamasının uzayan kısmı, beklemeler, lojistik, konu dışı laflar, aynı tahminin
+tekrarı. Kanca, oyunun can alıcı anları, sonuç ve önemli tepkiler kalır. Reel içindeki sessizlikler de
+kısaltılır (Hafif: 1,2 sn'den uzunlar ~0,5 sn'ye, Orta: 0,8→0,35, Agresif: 0,6→0,25). "Sessizlik" gerçek ses
+seviyesiyle doğrulanır: transkriptte kelime olmayan ama kahkaha/tepki/oyun sesi olan yer kesilmez.
+0,3 sn'den kısa kalan kırıntı parçalar atılır (kesik hece gibi duyulmasın).
+
+- Her reel'de "⏱ 92 sn → 48 sn" görünür; **Kısaltma kesimleri** listesinden her parçayı ▶ ile dinleyip tek tek
+  geri açabilirsin. Düşük güvenli kararlar kapalı gelir.
+- **✂ Seçili reels'i kısalt**: farklı seviye ve isteğe bağlı hedef süreyle ("60 sn altı") yeniden yapar.
+- "Kesilmiş önizleme" açıkken oynatıcı reel'i kısaltılmış haliyle oynatır.
+- Komut satırında: `--tighten light|medium|aggressive|off`.
+
+### Reels: altyazı ve konuya göre görseller
+
+- **Altyazı:** Videoya gömülü, söylenen kelimeyi anında vurgulayan altyazı (Kalın · Karaoke · Sade; altta veya
+  ortada). Whisper'ın kelime zamanlarıyla ASS dosyası üretilir, ffmpeg (libass) ile yazılır. Yazı tipi:
+  `.env` → `CAPTION_FONT`.
+- **Görseller:** **🖼 Konuya göre görselleri bul** → Claude reel'in transkriptini okur; belirli bir isim
+  (futbolcu, takım, şehir, marka, film…) geçtiği anda onun görselini koyar. "İlk 10" gibi listelerde her
+  öğeye sıra numarası (#3) verir. Görseller **Wikipedia/Wikimedia Commons**'tan (yalnızca serbest lisanslı,
+  yazar/lisans bilgisiyle) ve genel kavramlar için **Pexels**'ten gelir (`PEXELS_API_KEY`, ücretsiz).
+- Her görsel için: zamanı ve sıra numarasını düzelt, ekranda yazacak ismi değiştir, aramayı değiştirip 🔍,
+  **↻** ile başka aday, **⬆** ile kendi dosyanı yükle, ✕ ile sil. **+ Görsel** oynatıcının konumuna ekler.
+  Oynatıcı, görselleri render etmeden videonun üstünde gösterir.
+- Görsel yeri: üstte kart, ortada kart veya tam ekran. Kesilen yerlere denk gelen görseller otomatik kaydırılır.
+- Telif: Wikimedia ve Pexels görselleri yeniden kullanıma uygundur; Wikimedia görsellerinde açıklamada yazar
+  ve lisansı belirtin (her görselin altında yazar). Kendi yüklediğin görsellerin hakları sende olmalı.
+
 ## YouTube açıklaması
 
 - **3 · YouTube Açıklaması** sekmesine yayınlayacağın (kurgusu bitmiş) videoyu sürükle. Her açıklamanın
@@ -92,6 +183,7 @@ gönderilir; kamera arkasından gelen yönlendirmeleri ayırt etmesine yardım e
 ```bash
 python -m vedit edit  "cekim.mp4" --render
 python -m vedit reels "reels.mp4" --render --vertical blur
+python -m vedit reels "liste.mp4" --render --captions bold --visuals   # altyazı + konuya göre görseller
 python -m vedit detect transcript.json --no-claude     # yalnızca kesim listesini gör
 ```
 
@@ -147,6 +239,8 @@ vedit/            çekirdek kütüphane (web, CLI ve skill'ler ortak kullanır)
   diarize.py      konuşmacı ayrımı (WeSpeaker ONNX veya pyannote)
   audiomix.py     kişi bazlı ses ayarı
   youtube.py      YouTube bölümleri, açıklama, hashtag, etiket
+  captions.py     reels için gömülü, kelime vurgulu altyazı (ASS)
+  visuals.py      konuya göre görseller (Claude + Wikipedia/Pexels) ve yerleşim
   media.py        ffmpeg
   exporters.py    EDL, FCP7 XML, SRT
   pipeline.py     iş yönetimi

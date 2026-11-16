@@ -69,6 +69,12 @@ class Settings:
     video_crf: int = field(default_factory=lambda: int(_env("VIDEO_CRF", "18")))
     video_preset: str = field(default_factory=lambda: _env("VIDEO_PRESET", "veryfast"))
 
+    # --- Reels: altyazı ve görseller ---
+    caption_font: str = field(default_factory=lambda: _env("CAPTION_FONT", "Arial"))
+    pexels_api_key: str = field(default_factory=lambda: _env("PEXELS_API_KEY", ""))
+    # Wikipedia araması önce bu dilde, bulunamazsa İngilizce yapılır
+    wiki_lang: str = field(default_factory=lambda: _env("WIKI_LANG", "tr"))
+
     # --- Depolama ---
     data_dir: Path = field(default_factory=lambda: Path(_env("DATA_DIR", "data")).resolve())
 
