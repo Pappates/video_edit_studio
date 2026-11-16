@@ -35,8 +35,12 @@ def probe(path: str | Path) -> dict:
     if v and v.get("avg_frame_rate", "0/0") != "0/0":
         num, den = v["avg_frame_rate"].split("/")
         fps = float(num) / float(den) if float(den) else 30.0
+    try:   # görsellerde (webp/gif/png) süre "N/A" olabilir ya da hiç olmayabilir
+        duration = float(data["format"].get("duration", 0.0))
+    except (TypeError, ValueError):
+        duration = 0.0
     return {
-        "duration": float(data["format"].get("duration", 0.0)),
+        "duration": duration,
         "width": int(v["width"]) if v else 0,
         "height": int(v["height"]) if v else 0,
         "fps": round(fps, 3),
@@ -57,7 +61,7 @@ def _script_flag() -> str:
 
 
 def _run_ffmpeg(args: list[str], total: float = 0.0, progress: ProgressFn | None = None, label: str = "",
-                log_path: str | Path | None = None) -> None:
+                log_path: str | Path | None = None, cwd: str | Path | None = None) -> None:
     """ffmpeg'i çalıştırır; ilerlemeyi stdout'tan okur.
 
     stderr bir dosyaya yazılır, boruya DEĞİL: ffmpeg kodlamadan önce stderr'e uzun bir 'Stream mapping'
@@ -74,7 +78,8 @@ def _run_ffmpeg(args: list[str], total: float = 0.0, progress: ProgressFn | None
     try:
         with open(log_path, "w", encoding="utf-8", errors="replace") as log:
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=log, stdin=subprocess.DEVNULL,
-                                    text=True, encoding="utf-8", errors="replace")
+                                    text=True, encoding="utf-8", errors="replace",
+                                    cwd=str(cwd) if cwd else None)
             assert proc.stdout is not None
             for line in proc.stdout:
                 m = pat.match(line.strip())
@@ -110,13 +115,72 @@ def vertical_filter(width: int, height: int, mode: str = "crop") -> str:
     return "crop=ih*9/16:ih,scale=1080:1920"
 
 
+def output_size(info: dict, vertical: str | None) -> tuple[int, int]:
+    """render_keeps'in üreteceği görüntü boyutu."""
+    if vertical:
+        return 1080, 1920
+    return info.get("width") or 1080, info.get("height") or 1920
+
+
+def _fit_filter(g: dict) -> str:
+    sw, sh = g["scale"]
+    if g["cover"]:
+        return f"scale={sw}:{sh}:force_original_aspect_ratio=increase,crop={sw}:{sh}"
+    fit = f"scale={sw}:{sh}"
+    if g["border"]:
+        bd = g["border"]
+        fit += f",pad={sw + 2 * bd}:{sh + 2 * bd}:{bd}:{bd}:color=white"
+    return fit
+
+
+def prescale_overlays(items: list[dict], workdir: Path) -> list[dict]:
+    """Her görseli bir kez son boyutuna (çerçeve dahil) ölçekleyip PNG yazar. Render sırasında görsel
+    her karede yeniden ölçeklenmez; yalnızca yumuşak geçiş uygulanır. Ölçeklenemeyen görsel atlanmaz,
+    eski yoldan (render içinde ölçekleme) devam eder."""
+    out = []
+    for k, it in enumerate(items):
+        dst = workdir / f"ovl_{os.getpid()}_{k:02d}.png"
+        try:
+            _run_ffmpeg(["-i", str(Path(it["path"]).resolve()), "-frames:v", "1",
+                         "-vf", f"{_fit_filter(it['geo'])},setsar=1,format=rgba", str(dst)])
+            out.append({**it, "path": str(dst), "prescaled": True})
+        except RuntimeError:
+            out.append(it)
+    return out
+
+
+def overlay_graph(base: str, items: list[dict], first_input: int) -> tuple[str, str]:
+    """Görsel kartlarını zamanında bindiren filtre zinciri. (zincir, son etiket) döner.
+
+    Her görsel `-loop 1 -t <bitiş>` ile ayrı giriş olur; zaman damgası 0'dan başladığı için fade ve
+    enable değerleri doğrudan çıktı zamanıdır.
+    """
+    parts, cur = [], base
+    for k, it in enumerate(items):
+        g = it["geo"]
+        a, b = it["start"], it["end"]
+        fd = min(0.25, (b - a) / 4)
+        fit = "null" if it.get("prescaled") else _fit_filter(g)
+        parts.append(f"[{first_input + k}:v]{fit},setsar=1,format=rgba,"
+                     f"fade=t=in:st={a:.3f}:d={fd:.3f}:alpha=1,fade=t=out:st={b - fd:.3f}:d={fd:.3f}:alpha=1[img{k}];"
+                     f"[{cur}][img{k}]overlay={g['x']}:{g['y']}:enable='between(t,{a:.3f},{b:.3f})':eof_action=pass[ov{k}];")
+        cur = f"ov{k}"
+    return "".join(parts), cur
+
+
 def render_keeps(src: str | Path, keeps: list[tuple[float, float]], dst: str | Path,
                  progress: ProgressFn | None = None, vertical: str | None = None,
-                 workdir: str | Path | None = None, audio_src: str | Path | None = None) -> Path:
+                 workdir: str | Path | None = None, audio_src: str | Path | None = None,
+                 overlays: list[dict] | None = None, ass_text: str | None = None,
+                 layout_plan: dict | None = None) -> Path:
     """Kalacak aralıkları kare-hassas kesip birleştirir (trim + concat, yeniden kodlama).
 
     audio_src: kaynakla aynı zaman çizelgesinde işlenmiş ses (ör. kişi bazlı ses ayarı); verilirse
     ses bu dosyadan alınır.
+    overlays: visuals.overlay_plan() çıktısı (çıktı zamanıyla görsel kartları).
+    ass_text: videoya gömülecek ASS altyazı (captions.build_ass); görsellerin üstüne yazılır.
+    layout_plan: layout.plan() — verilirse dikey görüntü bölgelerden dizilir (oyun + yüzler); vertical
+    o zaman yalnızca "dikey çıktı" anlamına gelir.
     """
     if not keeps:
         raise ValueError("Kalacak aralık yok — tüm video kesilmiş görünüyor.")
@@ -143,19 +207,49 @@ def render_keeps(src: str | Path, keeps: list[tuple[float, float]], dst: str | P
         labels.append((f"[v{i}]" if has_v else "") + (f"[a{i}]" if has_a else ""))
     graph = "".join(lines) + "".join(labels) + \
         f"concat=n={len(keeps)}:v={int(has_v)}:a={int(has_a)}" + ("[outv]" if has_v else "") + ("[outa]" if has_a else "")
-    if vertical and has_v:
-        graph = graph.replace("[outv]", "[cv]") + f";[cv]{vertical_filter(info['width'], info['height'], vertical)}[outv]"
+    wd = Path(workdir or Path(dst).parent).resolve()
+    overlays = prescale_overlays(overlays, wd) if (has_v and overlays) else []
+    temp_images = [Path(it["path"]) for it in overlays if it.get("prescaled")]
+    ass_file = None
+    if has_v and (vertical or overlays or ass_text or layout_plan):
+        post, cur = [], "cv"
+        graph = graph.replace("[outv]", "[cv]")
+        if layout_plan:
+            from .layout import graph as layout_graph
+            post.append(";" + layout_graph("cv", "vv", layout_plan))
+            cur = "vv"
+        elif vertical:
+            post.append(f";[cv]{vertical_filter(info['width'], info['height'], vertical)}[vv]")
+            cur = "vv"
+        if overlays:
+            chain, cur = overlay_graph(cur, overlays, 2 if audio_src else 1)
+            post.append(";" + chain.rstrip(";"))
+        if ass_text:
+            # Göreli dosya adı + cwd: Windows yollarındaki 'C:' filtre sözdiziminde kaçış gerektirir.
+            ass_file = wd / f"subs_{os.getpid()}_{Path(dst).stem[-40:].encode('ascii', 'ignore').decode() or 'x'}.ass"
+            ass_file = ass_file.with_name(re.sub(r"[^A-Za-z0-9_.-]", "_", ass_file.name))
+            ass_file.write_text(ass_text, encoding="utf-8")
+            post.append(f";[{cur}]ass={ass_file.name}[sv]")
+            cur = "sv"
+        graph += "".join(post) + f";[{cur}]null[outv]"
 
-    wd = Path(workdir or Path(dst).parent)
     script = wd / (Path(dst).stem + ".filtergraph.txt")
     script.write_text(graph, encoding="utf-8")
     maps = (["-map", "[outv]"] if has_v else []) + (["-map", "[outa]"] if has_a else [])
     total = sum(b - a for a, b in keeps)
     seek = ["-ss", f"{offset:.3f}"] if offset > 0 else []
-    inputs = [*seek, "-i", str(src)] + ([*seek, "-i", str(audio_src)] if audio_src else [])
-    _run_ffmpeg([*inputs, _script_flag(), str(script), *maps, *_encode_args(), str(dst)],
-                total=total, progress=progress, label="Render",
-                log_path=wd / (Path(dst).stem + ".ffmpeg.log"))
+    inputs = [*seek, "-i", str(Path(src).resolve())] + ([*seek, "-i", str(Path(audio_src).resolve())] if audio_src else [])
+    for it in overlays or []:
+        inputs += ["-loop", "1", "-framerate", "30", "-t", f"{it['end'] + 0.5:.3f}", "-i", str(Path(it["path"]).resolve())]
+    try:
+        _run_ffmpeg([*inputs, _script_flag(), str(script), *maps, *_encode_args(), str(Path(dst).resolve())],
+                    total=total, progress=progress, label="Render",
+                    log_path=wd / (Path(dst).stem + ".ffmpeg.log"), cwd=wd)
+    finally:
+        if ass_file:
+            ass_file.unlink(missing_ok=True)
+        for p in temp_images:
+            p.unlink(missing_ok=True)
     script.unlink(missing_ok=True)
     return Path(dst)
 
@@ -166,9 +260,44 @@ def extract_frame(src: str | Path, t: float, dst: str | Path, width: int = 512) 
     return Path(dst)
 
 
-def scene_changes(src: str | Path, threshold: float = 0.32, scale_w: int = 320) -> list[float]:
-    """Sahne/kadraj değişim anları (sn). Reels sınırlarını bulmak için aday üretir."""
-    cmd = [_bin("ffmpeg"), "-hide_banner", "-nostdin", "-i", str(src), "-an",
+def quiet_intervals(src: str | Path, start: float = 0.0, end: float | None = None,
+                    noise_db: float | None = None, min_dur: float = 0.25) -> list[tuple[float, float]]:
+    """Gerçekten sessiz aralıklar (ffmpeg silencedetect) — kaynak zamanıyla.
+
+    Transkriptte kelime olmayan yer sessiz olmayabilir: kahkaha, tepki, oyun sesi, Whisper'ın yazmadığı
+    konuşma. noise_db verilmezse eşik bölgenin ortalama ses seviyesine göre seçilir (ortalama − 18 dB,
+    −55…−35 dB arası).
+    """
+    rng = (["-ss", f"{start:.3f}"] if start > 0 else []) + (["-t", f"{end - start:.3f}"] if end else [])
+    if noise_db is None:
+        err = subprocess.run([_bin("ffmpeg"), "-hide_banner", "-nostdin", *rng, "-i", str(src), "-vn",
+                              "-af", "volumedetect", "-f", "null", "-"],
+                             capture_output=True, text=True, encoding="utf-8", errors="replace").stderr
+        m = re.search(r"mean_volume: (-?[\d.]+) dB", err)
+        mean = float(m.group(1)) if m else -25.0
+        noise_db = max(-55.0, min(-35.0, mean - 18.0))
+    err = subprocess.run([_bin("ffmpeg"), "-hide_banner", "-nostdin", *rng, "-i", str(src), "-vn",
+                          "-af", f"silencedetect=noise={noise_db:.1f}dB:d={min_dur:.2f}", "-f", "null", "-"],
+                         capture_output=True, text=True, encoding="utf-8", errors="replace").stderr
+    out, cur = [], None
+    for kind, val in re.findall(r"silence_(start|end): (-?[\d.]+)", err):
+        t = float(val) + start
+        if kind == "start":
+            cur = max(start, t)
+        elif cur is not None:
+            out.append((round(cur, 3), round(t, 3)))
+            cur = None
+    if cur is not None:   # sessizlik bölgenin sonuna kadar sürüyor
+        out.append((round(cur, 3), round(end if end else cur, 3)))
+    return [(a, b) for a, b in out if b > a]
+
+
+def scene_changes(src: str | Path, threshold: float = 0.32, scale_w: int = 320,
+                  start: float = 0.0, end: float | None = None) -> list[float]:
+    """Sahne/kadraj değişim anları (sn). Reels sınırlarını bulmak için aday üretir.
+    start/end verilirse yalnızca o aralık çözülür (uzun videoda parça parça analiz)."""
+    rng = (["-ss", f"{start:.3f}"] if start > 0 else []) + (["-t", f"{end - start:.3f}"] if end else [])
+    cmd = [_bin("ffmpeg"), "-hide_banner", "-nostdin", *rng, "-i", str(src), "-an",
            "-vf", f"scale={scale_w}:-2,select='gt(scene,{threshold})',showinfo", "-f", "null", "-"]
     err = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace").stderr
-    return [round(float(m), 3) for m in re.findall(r"pts_time:([0-9.]+)", err)]
+    return [round(float(m) + start, 3) for m in re.findall(r"pts_time:([0-9.]+)", err)]

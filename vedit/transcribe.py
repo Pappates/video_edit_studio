@@ -55,12 +55,9 @@ def _load_model():
     return _model_cache[key]
 
 
-def transcribe(media_path: str | Path, out_json: str | Path | None = None,
-               progress: ProgressFn | None = None) -> dict:
-    """Videoyu/sesi yazıya döker. `out_json` varsa ve doluysa önbellekten okur."""
-    if out_json and Path(out_json).exists():
-        return json.loads(Path(out_json).read_text(encoding="utf-8"))
-
+def transcribe_stream(media_path: str | Path):
+    """(dil, süre, segment üreteci). Whisper segmentleri sırayla, istenildikçe çözer; üreteç erken
+    bırakılırsa videonun geri kalanı hiç işlenmez (uzun videoda 'ilk N reel' için)."""
     model = _load_model()
     seg_iter, info = model.transcribe(
         str(media_path),
@@ -72,26 +69,33 @@ def transcribe(media_path: str | Path, out_json: str | Path | None = None,
         condition_on_previous_text=False,  # tekrarlarda halüsinasyonu azaltır
         beam_size=5,
     )
-    duration = float(getattr(info, "duration", 0.0) or 0.0)
 
+    def gen():
+        for seg in seg_iter:
+            yield {
+                "start": round(seg.start, 3),
+                "end": round(seg.end, 3),
+                "text": seg.text.strip(),
+                "words": [{"start": round(w.start, 3), "end": round(w.end, 3), "word": w.word.strip(),
+                           "prob": round(getattr(w, "probability", 1.0), 3)} for w in (seg.words or [])],
+            }
+    return info.language, float(getattr(info, "duration", 0.0) or 0.0), gen()
+
+
+def transcribe(media_path: str | Path, out_json: str | Path | None = None,
+               progress: ProgressFn | None = None) -> dict:
+    """Videoyu/sesi yazıya döker. `out_json` varsa ve doluysa önbellekten okur."""
+    if out_json and Path(out_json).exists():
+        return json.loads(Path(out_json).read_text(encoding="utf-8"))
+
+    language, duration, segs = transcribe_stream(media_path)
     segments = []
-    for i, seg in enumerate(seg_iter):
-        words = [
-            {"start": round(w.start, 3), "end": round(w.end, 3), "word": w.word.strip(),
-             "prob": round(getattr(w, "probability", 1.0), 3)}
-            for w in (seg.words or [])
-        ]
-        segments.append({
-            "id": i,
-            "start": round(seg.start, 3),
-            "end": round(seg.end, 3),
-            "text": seg.text.strip(),
-            "words": words,
-        })
+    for i, seg in enumerate(segs):
+        segments.append({"id": i, **seg})
         if progress and duration:
-            progress(min(seg.end / duration, 1.0), f"Transkripsiyon {seg.end:.0f}/{duration:.0f} sn")
+            progress(min(seg["end"] / duration, 1.0), f"Transkripsiyon {seg['end']:.0f}/{duration:.0f} sn")
 
-    result = {"language": info.language, "duration": duration, "segments": segments}
+    result = {"language": language, "duration": duration, "segments": segments}
     result = resegment(result)
     if out_json:
         Path(out_json).write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")

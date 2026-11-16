@@ -102,9 +102,21 @@ def _srt_time(t: float) -> str:
     return f"{ms // 3600000:02d}:{(ms // 60000) % 60:02d}:{(ms // 1000) % 60:02d},{ms % 1000:03d}"
 
 
-def to_srt(transcript: dict, keeps: list[tuple[float, float]], max_chars: int = 42,
-           max_dur: float = 3.0) -> str:
-    """Kalan kelimelerden kurgulanmış videoya hizalı altyazı üretir (reels için kısa satırlar)."""
+def remap_forward(t: float, keeps: list[tuple[float, float]]) -> float | None:
+    """remap gibi; t kesilen bir yere düşerse bir sonraki kalan aralığın başına kaydırır."""
+    r = remap(t, keeps)
+    if r is not None:
+        return r
+    acc = 0.0
+    for a, b in keeps:
+        if a > t:
+            return acc
+        acc += b - a
+    return None
+
+
+def aligned_words(transcript: dict, keeps: list[tuple[float, float]]) -> list[tuple[float, float, str]]:
+    """Kalan kelimeler, kurgulanmış videonun zamanıyla: [(başlangıç, bitiş, kelime), ...]."""
     words = []
     for s in transcript["segments"]:
         for w in s.get("words") or [{"start": s["start"], "end": s["end"], "word": s["text"]}]:
@@ -114,18 +126,32 @@ def to_srt(transcript: dict, keeps: list[tuple[float, float]], max_chars: int = 
             ns, ne = remap(w["start"], keeps), remap(w["end"], keeps)
             ns = ns if ns is not None else remap(mid, keeps)
             ne = ne if ne is not None else remap(mid, keeps)
-            words.append((ns, ne, w["word"].strip()))
+            text = w["word"].strip()
+            if text:
+                words.append((ns, ne, text))
+    return words
 
+
+def group_cues(words: list[tuple[float, float, str]], max_chars: int = 42, max_dur: float = 3.0,
+               max_words: int = 0) -> list[list[tuple[float, float, str]]]:
+    """Kelimeleri ekranda birlikte görünecek kısa satırlara böler."""
     cues, cur = [], []
     for w in words:
         text = " ".join(x[2] for x in cur + [w])
-        if cur and (len(text) > max_chars or w[1] - cur[0][0] > max_dur or w[0] - cur[-1][1] > 0.6):
+        if cur and (len(text) > max_chars or w[1] - cur[0][0] > max_dur or w[0] - cur[-1][1] > 0.6
+                    or (max_words and len(cur) >= max_words)):
             cues.append(cur)
             cur = []
         cur.append(w)
     if cur:
         cues.append(cur)
+    return cues
 
+
+def to_srt(transcript: dict, keeps: list[tuple[float, float]], max_chars: int = 42,
+           max_dur: float = 3.0) -> str:
+    """Kalan kelimelerden kurgulanmış videoya hizalı altyazı üretir (reels için kısa satırlar)."""
+    cues = group_cues(aligned_words(transcript, keeps), max_chars, max_dur)
     out = []
     for n, c in enumerate(cues, 1):
         out += [str(n), f"{_srt_time(c[0][0])} --> {_srt_time(max(c[-1][1], c[0][0] + 0.3))}",

@@ -97,6 +97,59 @@ select{background:var(--panel2);color:var(--text);border:1px solid var(--line);b
 .warn{font-size:12px;color:var(--accent);margin-top:4px}
 .chmark{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);opacity:.9}
 .chmark b{position:absolute;top:2px;left:4px;font:600 10px system-ui;color:var(--text);white-space:nowrap;text-shadow:0 1px 2px #000}
+.list.locked{pointer-events:none;opacity:.55}
+#mtlBox{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.mtl-bar{gap:6px}.mtl-bar .btn{padding:4px 8px;font-size:12px}
+.mtl-scroll{overflow-x:auto;overflow-y:hidden;margin-top:8px;border:1px solid var(--line);border-radius:6px;background:#0b0d12;user-select:none}
+.mtl-inner{position:relative;height:150px}
+.mtl-ruler{position:absolute;left:0;right:0;top:0;height:20px;border-bottom:1px solid var(--line);cursor:pointer}
+.mtl-ruler span{position:absolute;top:2px;font:10px var(--mono);color:var(--mute);transform:translateX(3px);white-space:nowrap}
+.mtl-ruler i{position:absolute;bottom:0;width:1px;height:6px;background:var(--line)}
+.mtl-track{position:absolute;left:0;top:22px;height:126px}
+.mtl-thumbs{position:absolute;left:0;top:0;height:64px;overflow:hidden;background-repeat:no-repeat}
+.mtl-thumbs img{position:absolute;top:0;height:64px;pointer-events:none}
+.mtl-wave{position:absolute;left:0;top:66px;height:58px;background:#0f2230;background-size:100% 100%;background-repeat:no-repeat}
+.mseg{position:absolute;top:0;height:124px;border:1px solid #ffffff22;box-sizing:border-box;cursor:pointer}
+.mseg.reel{background:#2b6cff33;border-color:#4c8dff}
+.mseg.off{background:repeating-linear-gradient(135deg,#00000088 0 6px,#00000055 6px 12px)}
+.mseg.sel{outline:2px solid #ffb020;outline-offset:-2px;z-index:2}
+.mseg b{position:absolute;left:4px;top:3px;font:700 11px system-ui;color:#fff;background:#2b6cff;padding:1px 5px;border-radius:3px;white-space:nowrap}
+.msplit{position:absolute;top:0;height:124px;width:9px;margin-left:-4px;cursor:ew-resize;z-index:3}
+.msplit::after{content:"";position:absolute;left:4px;top:0;bottom:0;width:2px;background:#ff5a5a}
+.mtl-head{position:absolute;top:0;height:150px;width:2px;background:#fff;pointer-events:none;z-index:4}
+.mtl-head::before{content:"";position:absolute;left:-5px;top:0;border:6px solid transparent;border-top-color:#fff}
+.layout-grid{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:10px;margin-top:8px;align-items:start}
+.layframe{position:relative;user-select:none;touch-action:none;line-height:0}
+.layframe img{width:100%;display:block;border-radius:6px;border:1px solid var(--line)}
+.lbox{position:absolute;border:2px solid #ff8a1f;background:#ff8a1f22;cursor:move;line-height:1.2}
+.lbox.cam{border-color:#4c8dff;background:#4c8dff22}
+.lbox b{position:absolute;left:0;top:0;font:700 10px system-ui;color:#111;background:#ff8a1f;padding:1px 4px}
+.lbox.cam b{background:#4c8dff;color:#fff}
+.lbox .rs{position:absolute;right:-6px;bottom:-6px;width:12px;height:12px;background:#fff;border:2px solid #111;border-radius:2px;cursor:nwse-resize}
+.lbox .del{position:absolute;right:2px;top:1px;font:700 12px system-ui;color:#fff;cursor:pointer;text-shadow:0 0 3px #000}
+.laypreview img{width:100%;aspect-ratio:9/16;object-fit:contain;background:#000;border-radius:6px;border:1px solid var(--line)}
+@media (max-width:640px){.layout-grid{grid-template-columns:1fr}.laypreview{max-width:200px;margin:auto}}
+.pwrap{position:relative}
+.pwrap video{display:block}
+#visPrev{position:absolute;left:50%;top:6%;transform:translateX(-50%);max-width:46%;max-height:42%;border:4px solid #fff;border-radius:4px;box-shadow:0 6px 24px #000a;pointer-events:none}
+#visPrevLbl{position:absolute;left:50%;transform:translateX(-50%);font:800 13px system-ui;background:#000a;color:#fff;padding:2px 8px;border-radius:4px;pointer-events:none;white-space:nowrap}
+.vis{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+.vis .vhead{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--mute)}
+.vrow{display:grid;grid-template-columns:auto 56px 1fr;gap:4px 8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line)}
+.vrow .vbtns{grid-column:3;justify-content:flex-start!important}
+.vrow:last-child{border-bottom:0}
+.vrow.off{opacity:.5}
+.vrow .thumb{width:56px;height:56px;object-fit:cover;border-radius:4px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--mute)}
+.vrow .vmain{display:flex;flex-direction:column;gap:3px;min-width:0}
+.vrow input.vl{background:transparent;border:0;border-bottom:1px dashed var(--line);color:var(--text);font:600 13px system-ui;min-width:0;width:100%}
+.vrow input.vq{background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:4px;padding:2px 5px;font:inherit;font-size:12px;min-width:0;flex:1}
+.vrow input.rk{width:38px}
+.vrow .credit{font-size:10px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vrow .credit a{color:var(--mute)}
+.vrow .vbtns{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.vrow .vbtns .btn{padding:3px 7px;font-size:12px}
+.vstyle{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:12px;color:var(--mute)}
+@media (max-width:640px){.vrow{grid-template-columns:auto 48px 1fr}}
 </style>
 </head>
 <body>
@@ -122,6 +175,12 @@ select{background:var(--panel2);color:var(--text);border:1px solid var(--line);b
         <label class="cutopt"><input type="checkbox" id="optStutter" checked> Kelime tekrarlarını kes</label>
         <label><input type="checkbox" id="optDiarize" checked> Konuşmacıları ayır</label>
         <label>Kişi sayısı <select id="optSpeakers"><option value="0">Otomatik</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+        <label id="reelLimitWrap" class="hidden" title="Uzun videoda test için: video baştan parça parça işlenir, bu kadar reel bulununca durur">Kaç reel?
+          <select id="optMaxReels"><option value="0">Videonun hepsine bak</option><option value="1">İlk 1 reel</option><option value="2">İlk 2 reel</option><option value="3">İlk 3 reel</option><option value="5">İlk 5 reel</option><option value="10">İlk 10 reel</option></select></label>
+        <label id="reelSplitWrap" class="hidden" title="Ben işaretleyeceğim: kurgu şeridinde S ile reel başı/sonu işaretlenir (transkripsiyon sürerken de)">Reel sınırları
+          <select id="optSplit"><option value="manual" selected>Ben işaretleyeceğim</option><option value="auto">Otomatik (Claude)</option></select></label>
+        <label id="reelTightWrap" class="hidden" title="Bölündükten sonra her reel kendi içinde kısaltılır: kategori yazma, bekleme, lojistik, uzayan kısımlar">Reel'i kısalt
+          <select id="optTighten"><option value="">Kapalı</option><option value="light">Hafif</option><option value="medium" selected>Orta</option><option value="aggressive">Agresif</option></select></label>
       </div>
       <div id="ytOpts" class="hidden" style="max-width:640px;margin:14px auto 0;text-align:left">
         <label class="msg">Her açıklamaya eklenecek sabit bilgiler (isteğe bağlı) — linkler, sosyal medya, iletişim. Tarayıcı hatırlar.</label>
@@ -146,8 +205,39 @@ select{background:var(--panel2);color:var(--text);border:1px solid var(--line);b
 
     <div class="grid">
       <div class="panel">
-        <video id="player" controls preload="metadata"></video>
+        <div class="pwrap"><video id="player" controls preload="metadata"></video>
+          <img id="visPrev" class="hidden" alt=""><span id="visPrevLbl" class="hidden"></span></div>
         <div class="timeline" id="timeline"><div class="mark hidden" id="markBox"></div><div class="spk-lane" id="spkLane"></div><div class="head" id="head"></div></div>
+        <!-- Kurgu şeridi: reel sınırlarını elle işaretleme (Shotcut benzeri) -->
+        <div id="mtlBox" class="hidden">
+          <div class="row mtl-bar">
+            <strong>Kurgu şeridi</strong>
+            <button class="btn" id="mtlSplit" title="Oynatıcının konumundan böl (S)">✂ Böl <kbd>S</kbd></button>
+            <button class="btn" id="mtlToggle" title="Seçili parçayı reel yap / reel'likten çıkar (R)">★ Reel yap/çıkar <kbd>R</kbd></button>
+            <button class="btn" id="mtlDel" title="Seçili parçayı at — reel değil (Delete)">🗑 At <kbd>Del</kbd></button>
+            <button class="btn" id="mtlMerge" title="Seçili parçayı sağındakiyle birleştir (bölme çizgisini kaldır)">⇥ Birleştir</button>
+            <span class="row" style="margin-left:auto;gap:4px">
+              <button class="btn" id="mtlZoomOut" title="Uzaklaştır (−)">−</button>
+              <input type="range" id="mtlZoom" min="0" max="100" value="35" style="width:110px">
+              <button class="btn" id="mtlZoomIn" title="Yakınlaştır (+)">+</button>
+            </span>
+          </div>
+          <div class="mtl-scroll" id="mtlScroll">
+            <div class="mtl-inner" id="mtlInner">
+              <div class="mtl-ruler" id="mtlRuler"></div>
+              <div class="mtl-track" id="mtlTrack"><div class="mtl-thumbs" id="mtlThumbs"></div><div class="mtl-wave" id="mtlWave"></div><div id="mtlSegs"></div></div>
+              <div class="mtl-head" id="mtlHead"></div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:6px;gap:8px">
+            <span class="msg" id="mtlMsg"></span>
+            <span style="margin-left:auto" class="row">
+              <select id="mtlLevel" title="Hazırlarken kısaltma seviyesi"><option value="light" selected>Kısalt: Hafif</option><option value="medium">Kısalt: Orta</option><option value="aggressive">Kısalt: Agresif</option><option value="">Kısaltma yok</option></select>
+              <button class="btn primary" id="mtlPrepare" title="İşaretli reels için başlık/açıklama üret ve kısalt">📝 Reels'i hazırla</button>
+            </span>
+          </div>
+          <div class="hint"><kbd>S</kbd> böl (art arda iki <kbd>S</kbd>: arası reel olur) · <kbd>R</kbd> reel yap/çıkar · <kbd>Del</kbd> at · parçaya tıkla: seç · çizgiyi sürükle: sınırı kaydır · <kbd>+</kbd>/<kbd>−</kbd> yakınlaştır · <kbd>,</kbd>/<kbd>.</kbd> 1 kare geri/ileri</div>
+        </div>
         <div class="row" style="margin-top:10px">
           <label class="row" id="previewWrap"><input type="checkbox" id="preview" checked> Kesilmiş önizleme</label>
           <span class="t" id="clock">00:00.0</span>
@@ -209,10 +299,51 @@ select{background:var(--panel2);color:var(--text);border:1px solid var(--line);b
           </span>
         </div>
         <div class="msg" id="reelMethod"></div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="findVisuals" title="'İçerik ekle' işaretli reels'de Claude konuşulan kişi/yer/şeyleri bulur; görseller Wikipedia ve Pexels'ten gelir. Render'dan önce bakıp düzeltmek için; basmasan da render başlarken aranır.">🖼 İçerik ekle işaretlilerin görsellerini bul</button>
+          <span class="msg" id="visHint"></span>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="tightenReels" title="Seçili reels'i kendi içinde kısaltır; önceki kısaltma kesimlerinin yerine geçer">✂ Seçili reels'i kısalt</button>
+          <select id="tightLevel"><option value="light">Hafif</option><option value="medium" selected>Orta</option><option value="aggressive">Agresif</option></select>
+          <label class="msg">Hedef <input type="number" id="tightTarget" min="5" max="600" step="5" placeholder="sn" style="width:64px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:3px 5px"> sn altı</label>
+        </div>
+        <input type="text" id="tightContext" maxlength="600" placeholder="İçerik notu (isteğe bağlı): ör. Frekans oyunu oynuyoruz; ibreyi sağa/sola yönlendirmek oyunun parçası, kesme"
+          title="Kısaltırken Claude'a verilir; neyin içerik, neyin lojistik olduğunu anlamasına yardım eder"
+          style="width:100%;margin-top:6px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px;font:inherit;font-size:12px">
         <div class="list" id="reelList"></div>
+        <div class="vstyle">
+          <label>Altyazı <select id="capStyle"><option value="bold">Kalın · kelime vurgulu</option><option value="karaoke">Karaoke</option><option value="minimal">Sade</option><option value="">Kapalı</option></select></label>
+          <label>Konum <select id="capPos"><option value="bottom">Alt</option><option value="middle">Orta</option></select></label>
+          <label><input type="checkbox" id="visOn" checked> Görselleri ekle</label>
+          <label>Görsel yeri <select id="visPos"><option value="top">Üstte kart</option><option value="center">Ortada kart</option><option value="full">Tam ekran</option></select></label>
+        </div>
         <div class="row" style="margin-top:12px">
           <button class="btn primary" id="renderReels">Seçili reels'leri oluştur</button>
-          <select id="reelVertical"><option value="crop">9:16 ortadan kırp</option><option value="blur">9:16 bulanık arka plan</option><option value="">Orijinal oran</option></select>
+          <select id="reelVertical">
+            <option value="faces_top" selected>9:16 · Oyun reel'leri: yüzler üstte, oyun altta (önerilen) · sohbet: yüzler alt alta</option>
+            <option value="game_top">9:16 · Oyun reel'leri: oyun üstte, yüzler altta · sohbet: yüzler alt alta</option>
+            <option value="game_full">9:16 · Oyun reel'leri: oyun tam boy, yüzler küçük · sohbet: yüzler alt alta</option>
+            <option value="talk">9:16 · Hepsi: yüzler alt alta</option>
+            <option value="crop">9:16 · Ortadan kırp</option>
+            <option value="blur">9:16 · Bulanık arka plan</option>
+            <option value="">Orijinal oran</option>
+          </select>
+          <button class="btn" id="layoutToggle" title="Oyun ve kamera bölgelerini gör, düzelt, önizle">⚙ Bölgeler ve önizleme</button>
+        </div>
+        <div id="layoutEditor" class="hidden">
+          <div class="row" style="margin-top:10px;gap:6px">
+            <button class="btn" id="layDetect" title="Claude karede oyunu ve kameraları bulur">🔍 Otomatik bul</button>
+            <button class="btn" id="layAddCam">+ Kamera</button>
+            <button class="btn" id="layFrame" title="Düzenleyicide oynatıcının şu anki karesini göster">Bu kareyi kullan</button>
+            <button class="btn primary" id="laySave">Kaydet ve önizle</button>
+            <span class="msg" id="layMsg"></span>
+          </div>
+          <div class="hint">Turuncu kutu: izleyicinin görmesi gereken oyun/ekran. Mavi kutular: kameralar (her kişi ayrı). Kutuyu sürükle, sağ alt köşesinden boyutlandır, ✕ ile kamerayı sil.</div>
+          <div class="layout-grid">
+            <div class="layframe" id="layFrameBox"><img id="layImg" alt="" draggable="false"></div>
+            <div class="laypreview"><img id="layPreview" alt=""><div class="msg" style="text-align:center">9:16 önizleme</div></div>
+          </div>
         </div>
         <div class="links" id="reelOut" style="margin-top:10px"></div>
       </div>
@@ -266,7 +397,7 @@ const COLORS = {retake:'#ef4b5a',command:'#ff6b3d',range:'#ff8f3d',repeat:'#ffb0
 const KIND_TR = {retake:'yeniden çekim',command:'komut',range:'aralık',repeat:'tekrar',false_start:'yarım cümle',
   stutter:'kekeleme',silence:'sessizlik',chatter:'muhabbet'};
 let mode = 'edit', job = null, transcript = null, poll = null, markIn = null, markOut = null;
-let hiddenKinds = new Set(), saveTimer = null, stopAt = null;
+let hiddenKinds = new Set(), saveTimer = null, stopAt = null, rawUntil = null;
 
 const fmt = s => { if (s == null || isNaN(s)) return '--'; const m = Math.floor(s/60); return `${String(m).padStart(2,'0')}:${(s%60).toFixed(1).padStart(4,'0')}`; };
 const parse = v => { v = String(v).trim(); if (v.includes(':')) { const [m,s] = v.split(':'); return +m*60 + +s; } return +v; };
@@ -284,10 +415,13 @@ document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
     youtube:'Yayınlayacağın videoyu buraya sürükleyin'}[mode];
   $('#dropDesc').textContent = {
     edit:'Konuşmalar yazıya dökülür; "burayı kes", "baştan alıyorum" gibi komutlar, tekrarlar ve uzun sessizlikler bulunur.',
-    reels:'Transkript, duraklamalar ve görüntü değişimleri (Claude vision) ile her reel ayrı parçaya bölünür; her birinin içindeki tekrarlar da temizlenir.',
+    reels:'Reel sınırlarını kurgu şeridinde S tuşuyla sen işaretlersin (ya da Claude otomatik böler); her reel kendi içinde kısaltılır, altyazı ve 9:16 yerleşimle çıkar.',
     youtube:'Video yazıya dökülür; Claude bölüm zaman damgaları, açıklama, hashtag\'ler, etiketler ve başlık önerileri hazırlar. Videoya dokunulmaz.'}[mode];
   document.querySelectorAll('.cutopt').forEach(x => x.classList.toggle('hidden', mode === 'youtube'));
   $('#ytOpts').classList.toggle('hidden', mode !== 'youtube');
+  $('#reelSplitWrap').classList.toggle('hidden', mode !== 'reels');
+  $('#reelLimitWrap').classList.toggle('hidden', mode !== 'reels' || $('#optSplit').value === 'manual');
+  $('#reelTightWrap').classList.toggle('hidden', mode !== 'reels');
   $('#optDiarize').checked = mode !== 'youtube';
   if (!job || job.mode !== mode) closeJob(); else { $('#upload').classList.add('hidden'); $('#jobView').classList.remove('hidden'); }
 });
@@ -299,7 +433,11 @@ api('/api/health').then(h => {
     chip(h.claude, h.claude ? h.claude_label : 'Claude kapalı (API anahtarı veya Claude Code yok)'),
     chip(h.diarization !== 'kapalı', 'Konuşmacı ayrımı: ' + h.diarization));
   if (!h.claude) { $('#optClaude').checked = false; $('#optClaude').disabled = true; }
+  health = h;
+  $('#visHint').textContent = (!h.claude ? 'Claude bağlı değil — görselleri "+ Görsel" ile elle ekleyin. ' : '') +
+    (h.pexels ? 'Kaynak: Wikipedia + Pexels' : 'Kaynak: Wikipedia (genel kavramlar için .env\'e PEXELS_API_KEY ekleyin)');
 });
+let health = {};
 
 // ---------- yükleme ----------
 const drop = $('#drop');
@@ -313,6 +451,8 @@ function upload(f) {
   fd.append('file', f); fd.append('mode', mode);
   fd.append('claude', $('#optClaude').checked); fd.append('silence', $('#optSilence').checked); fd.append('stutter', $('#optStutter').checked);
   fd.append('diarize', $('#optDiarize').checked); fd.append('speakers', $('#optSpeakers').value);
+  if (mode === 'reels') { fd.append('max_reels', $('#optMaxReels').value); fd.append('tighten_level', $('#optTighten').value);
+    fd.append('split', $('#optSplit').value); }
   if (mode === 'youtube') { fd.append('yt_extra', $('#ytExtraUp').value); fd.append('claude', true); }
   const xhr = new XMLHttpRequest(); const bar = $('#upProg');
   bar.classList.remove('hidden');
@@ -326,6 +466,8 @@ async function openJob(id) {
   transcript = null;
   job = await api(`/api/jobs/${id}`);
   mode = job.mode;
+  $('#tightContext').value = job.reel_context || '';
+  $('#layoutEditor').classList.add('hidden'); lay = null;
   document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x.dataset.tab === mode));
   $('#upload').classList.add('hidden'); $('#history').classList.add('hidden'); $('#jobView').classList.remove('hidden');
   $('#editPanel').classList.toggle('hidden', mode !== 'edit');
@@ -336,10 +478,12 @@ async function openJob(id) {
   $('#jobName').textContent = job.original_name;
   $('#player').src = `/api/jobs/${id}/source`;
   ['Xml','Edl','Srt'].forEach(k => $('#ex' + k).href = `/api/jobs/${id}/export/${k.toLowerCase()}`);
+  mtl.jobId = null; mtlInit();
   render(); startPoll();
 }
 function closeJob() {
-  clearInterval(poll); job = null; $('#player').removeAttribute('src');
+  clearInterval(poll); clearTimeout(mtl.metaT); job = null; mtl.jobId = null; $('#player').removeAttribute('src');
+  $('#mtlBox').classList.add('hidden');
   $('#jobView').classList.add('hidden'); $('#upload').classList.remove('hidden');
 }
 function startPoll() {
@@ -361,7 +505,11 @@ function renderStatus() {
   $('#jobMsg').textContent = job.message || '';
   $('#jobErr').classList.toggle('hidden', job.status !== 'error');
   $('#jobErr').textContent = job.error || '';
-  $('#renderBtn').disabled = $('#renderReels').disabled = busy;
+  $('#renderBtn').disabled = $('#renderReels').disabled = $('#findVisuals').disabled = $('#tightenReels').disabled = busy;
+  // Arka plan işi reels'i güncellerken listede düzenleme yapılmasın (sunucu da 409 ile reddeder)
+  // Render reels'i başta okur ve geri yazmaz: render sürerken düzenlemeye izin var
+  $('#reelList').classList.toggle('locked', busy && job.status !== 'rendering');
+  $('#mtlPrepare').disabled = busy || !mtl.segs.some(s => s.reel);
   const d = job.media?.duration;
   $('#jobStats').innerHTML = d ? `Süre <b>${fmt(d)}</b>` + (job.kept_duration != null && mode === 'edit'
     ? ` → <b>${fmt(job.kept_duration)}</b> (−${fmt(d - job.kept_duration)})` : '') : '';
@@ -372,7 +520,7 @@ async function render() {
   if (!transcript) transcript = await api(`/api/jobs/${job.id}/transcript`).catch(() => null);
   drawTimeline(); drawTranscript(); drawSpeakers();
   if (mode === 'edit') { drawFilters(); drawCuts(); drawEditOut(); }
-  else if (mode === 'reels') { drawReels(); drawReelOut(); }
+  else if (mode === 'reels') { drawReels(); drawReelOut(); mtlSync(); }
   if (mode === 'youtube' || job.youtube || job.youtube_error) { $('#ytPanel').classList.remove('hidden'); loadYt(); }
 }
 
@@ -404,10 +552,32 @@ player.addEventListener('timeupdate', () => {
     const c = job.cuts.find(c => c.enabled && t >= c.start && t < c.end - 0.05);
     if (c) player.currentTime = c.end;
   }
+  // Reels: genel temizlik + sıkılaştırma kesimlerini atlayarak oynat (▶ İzle dahil)
+  if (rawUntil != null && (t >= rawUntil[1] || t < rawUntil[0] - 1)) rawUntil = null;
+  if (mode === 'reels' && $('#preview').checked && rawUntil == null && job?.reels) {
+    const r = job.reels.find(r => t >= r.start && t < r.end);
+    const c = r && reelCuts(r).find(c => t >= c.start && t < c.end - 0.05);
+    if (c) player.currentTime = c.end;
+  }
   const now = document.querySelector('.tr span.now'); now && now.classList.remove('now');
   const seg = transcript?.segments.find(s => t >= s.start && t <= s.end);
   seg && document.querySelector(`.tr span[data-id="${seg.id}"]`)?.classList.add('now');
+  showVisualPreview(t);
 });
+// Reels modunda o anki görseli oynatıcının üstünde gösterir (render etmeden kontrol için)
+function showVisualPreview(t) {
+  const img = $('#visPrev'), lbl = $('#visPrevLbl');
+  let v = null;
+  if (mode === 'reels' && job?.reels && $('#visOn').checked)
+    for (const r of job.reels) { if (!r.enrich) continue; v = (r.visuals || []).find(x => x.enabled !== false && x.file && t >= x.start && t < x.end); if (v) break; }
+  if (!v) { img.classList.add('hidden'); lbl.classList.add('hidden'); return; }
+  const src = `/api/jobs/${job.id}/visuals/${encodeURIComponent(v.file)}`;
+  if (img.dataset.src !== src) { img.src = src; img.dataset.src = src; }
+  img.classList.remove('hidden');
+  lbl.textContent = (v.rank ? '#' + v.rank + '  ' : '') + (v.label || '');
+  lbl.classList.toggle('hidden', !lbl.textContent);
+  lbl.style.top = `calc(6% + ${img.offsetHeight + 6}px)`;
+}
 function playRange(a, b) { stopAt = b; player.currentTime = Math.max(0, a); player.play(); }
 document.addEventListener('keydown', e => {
   if (!job || ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
@@ -743,8 +913,24 @@ function drawReels() {
     const title = el('input', {className:'title', value: r.title}); title.onchange = () => { r.title = title.value; saveReels(); };
     const inS = el('input', {value: fmt(r.start)}), inE = el('input', {value: fmt(r.end)});
     inS.onchange = inE.onchange = () => { const a = parse(inS.value), b = parse(inE.value); if (b > a) { r.start = a; r.end = b; saveReels(true); } };
-    const clean = el('input', {type:'checkbox', checked: r.clean}); clean.onchange = () => { r.clean = clean.checked; saveReels(); };
+    const clean = el('input', {type:'checkbox', checked: r.clean}); clean.onchange = () => { r.clean = clean.checked; saveReels(true); };
+    // İçerik ekle: işaretli reel'e konuya göre görseller (oyuncu/takım resimleri) eklenir; oyun reel'lerinde kapalı kalır
+    const enrich = el('input', {type:'checkbox', checked: !!r.enrich}); enrich.onchange = () => { r.enrich = enrich.checked; saveReels(true); };
+    // Yerleşim: otomatik (reel'in kendi karesine bakılır) / sohbet (yüzler alt alta) / oyun + yüzler
+    const det = r.layout_regions?.kind;
+    const lk = el('select', {title:'Dikey yerleşim. Otomatik: ekranda oyun varsa oyun + yüzler, yalnızca yüzler varsa yüzler alt alta'},
+      el('option', {value:'', textContent:'Yerleşim: otomatik' + (det ? (det === 'talk' ? ' (sohbet)' : ' (oyun)') : '')}),
+      el('option', {value:'talk', textContent:'Sohbet: yüzler alt alta'}),
+      el('option', {value:'game', textContent:'Oyun + yüzler'}));
+    lk.value = r.layout_kind || ''; lk.style.cssText = 'font-size:12px;padding:2px 4px';
+    lk.onchange = () => { r.layout_kind = lk.value; saveReels(); };
     const play = el('button', {className:'btn', textContent:'▶ İzle'}); play.onclick = () => playRange(r.start, r.end);
+    const chk = el('button', {className:'btn', textContent:'⏹ Bitişi kontrol et', title:'Claude oyunun/konunun gerçekten bittiği yeri kontrol eder; gerekirse bitişi düzeltir'});
+    chk.onclick = async () => {
+      chk.disabled = true; chk.textContent = '⏹ Kontrol ediliyor…';
+      try { await flushReels(); job = await api(`/api/jobs/${job.id}/reels/${r.id}/check-end`, {method:'POST'}); render(); }
+      catch (e) { alert(e.message); chk.disabled = false; chk.textContent = '⏹ Bitişi kontrol et'; }
+    };
     const del = el('button', {className:'btn', textContent:'✕'}); del.onclick = () => { job.reels.splice(i, 1); saveReels(true); };
     const cap = el('textarea', {rows:3, value: r.caption + (r.hashtags?.length ? '\n' + r.hashtags.join(' ') : ''), placeholder:'Açıklama ve hashtag'});
     cap.onchange = () => { const lines = cap.value.split('\n'); const tags = lines.filter(l => l.trim().startsWith('#')).join(' ');
@@ -753,25 +939,464 @@ function drawReels() {
     const item = el('div', {className:'item reel' + (r.enabled ? '' : ' off')},
       el('div', {className:'top'}, cb, dot, title),
       el('div', {className:'row', style:'margin-top:6px'}, el('span', {className:'t'}, inS, ' – ', inE, ` (${Math.round(r.end - r.start)} sn)`),
-        el('label', {className:'t'}, clean, ' içini temizle'), play, del),
+        el('label', {className:'t'}, clean, ' içini temizle'), play, chk, del),
+      el('div', {className:'row', style:'margin-top:6px'},
+        el('label', {className:'t', title:'İşaretlersen Claude konuşulan kişi/takım/yerleri bulur, görselleri render\'da eklenir. Görsel aranmamışsa render başlarken aranır.'},
+          enrich, ' 🖼 İçerik ekle'), lk),
+      r.retake ? el('div', {className:'warn', textContent: '⟲ ' + r.retake + ' — bunu kullanmak istersen kutucuğu işaretle'}) : '',
+      r.marker ? el('div', {className:'reason', textContent: '🎬 Çekimde söylenen işaret: "' + r.marker + '" (işaret kesildi)'}) : '',
       r.hook ? el('div', {className:'reason', textContent: '🎣 ' + r.hook}) : '',
       r.notes ? el('div', {className:'reason', textContent: r.notes}) : '',
-      cap);
+      drawTighten(r), cap, r.enrich ? drawVisuals(r) : '');
     list.append(item);
   });
+}
+
+// ---------- reels: kendi içinde kısaltma ----------
+const TIGHT_TR = {light:'Hafif', medium:'Orta', aggressive:'Agresif'};
+const TKIND_TR = {logistics:'lojistik', waiting:'bekleme', offtopic:'konu dışı', redundant:'tekrar', slow:'yavaş kısım', silence:'sessizlik'};
+function reelCuts(r) {
+  // Sunucudaki tighten.reel_base_cuts ile aynı: kısaltılmış reel'de genel temizliğin 'muhabbet' kesimleri
+  // uygulanmaz (kararı kısaltma adımı verir)
+  return (r.clean !== false ? (job.cuts || []).filter(c => c.enabled && !(r.tight_level && c.kind === 'chatter')) : [])
+    .concat((r.tighten || []).filter(c => c.enabled !== false));
+}
+function keptDuration(r) {
+  // Sunucudaki tighten.reel_keeps ile aynı: kesimleri birleştir, kalanları bul, kırıntıları temizle
+  const spans = reelCuts(r).map(c => [Math.max(r.start, c.start), Math.min(r.end, c.end)]).filter(([a, b]) => b > a)
+    .sort((x, y) => x[0] - y[0]);
+  const merged = [];
+  for (const [a, b] of spans) { const m = merged[merged.length - 1]; if (m && a <= m[1] + 0.02) m[1] = Math.max(m[1], b); else merged.push([a, b]); }
+  const keeps = []; let cur = r.start;
+  for (const [a, b] of merged) { if (a - cur > 0.04) keeps.push([cur, a]); cur = Math.max(cur, b); }
+  if (r.end - cur > 0.04) keeps.push([cur, r.end]);
+  const smooth = [];
+  for (const [a, b] of keeps) { const m = smooth[smooth.length - 1]; if (m && a - m[1] < 0.15) m[1] = b; else smooth.push([a, b]); }
+  return smooth.filter(([a, b]) => b - a >= 0.3).reduce((s, [a, b]) => s + b - a, 0);
+}
+function drawTighten(r) {
+  const box = el('div', {className:'reason'});
+  const total = r.end - r.start, kept = keptDuration(r);
+  const content = (r.tighten || []).filter(c => c.kind !== 'silence');
+  const sil = (r.tighten || []).filter(c => c.kind === 'silence');
+  const one = el('button', {className:'btn', textContent:'✂ Kısalt', title:'Bu reel\'i üstteki seviye ve hedefle yeniden kısalt'});
+  one.style.cssText = 'padding:2px 8px;font-size:12px;margin-left:6px';
+  one.onclick = () => runTighten([r.id]);
+  box.append(el('span', {className:'t', textContent:
+    `⏱ ${Math.round(total)} sn → ${Math.round(kept)} sn` + (r.tight_level ? `  ·  kısaltma: ${TIGHT_TR[r.tight_level] || r.tight_level}` : '  ·  kısaltılmadı')}), one);
+  if (r.tight_note) box.append(el('div', {textContent: r.tight_note}));
+  if (!content.length && !sil.length) return box;
+  const det = el('details', {}, el('summary', {textContent:
+    `Kısaltma kesimleri: ${content.length} parça` + (sil.length ? ` + ${sil.length} sessizlik` : '') + ' — tıkla, tek tek aç/kapat'}));
+  det.open = !!r._openTight; det.ontoggle = () => { r._openTight = det.open; };
+  const silOn = el('input', {type:'checkbox', checked: sil.every(c => c.enabled !== false)});
+  silOn.onchange = () => { sil.forEach(c => c.enabled = silOn.checked); saveReels(true); };
+  if (sil.length) det.append(el('label', {className:'t', style:'display:block;margin:4px 0'}, silOn, ` Sıkı sessizlik kesimleri (${sil.length})`));
+  content.forEach(c => {
+    const on = el('input', {type:'checkbox', checked: c.enabled !== false}); on.onchange = () => { c.enabled = on.checked; saveReels(true); };
+    const play = el('button', {className:'btn', textContent:'▶', title:'Kesilen kısmı dinle'});
+    play.style.cssText = 'padding:1px 6px;font-size:11px';
+    play.onclick = () => { rawUntil = [c.start - 0.3, c.end + 0.3]; playRange(c.start - 0.3, c.end + 0.3); };
+    det.append(el('div', {className:'item' + (c.enabled === false ? ' off' : ''), style:'padding:5px 8px;margin-top:4px'},
+      el('div', {className:'top'}, on, play,
+        el('span', {className:'badge', textContent: TKIND_TR[c.kind] || c.kind, style:'background:#b07cff'}),
+        el('span', {className:'t', textContent:`${fmt(c.start)}–${fmt(c.end)} (${(c.end - c.start).toFixed(1)} sn)`})),
+      el('div', {className:'reason', textContent: c.reason}),
+      c.text ? el('div', {className:'quote', textContent: c.text}) : ''));
+  });
+  box.append(det);
+  return box;
+}
+async function runTighten(ids) {
+  if (!ids.length) return alert('Önce en az bir reel seçin.');
+  const target = parseFloat($('#tightTarget').value) || null;
+  try {
+    await flushReels();
+    await api(`/api/jobs/${job.id}/reels/tighten`, {method:'POST', headers:{'content-type':'application/json'},
+      body: JSON.stringify({ids, level: $('#tightLevel').value, target_sec: target, context: $('#tightContext').value})});
+    job.status = 'running'; renderStatus(); startPoll();
+  } catch (e) { alert(e.message); }
+}
+$('#tightenReels').onclick = () => runTighten(job.reels.filter(r => r.enabled).map(r => r.id));
+
+// ---------- reels: konuya göre görseller ----------
+const SRC_TR = {wikipedia:'Wikipedia', pexels:'Pexels', upload:'Kendi dosyan'};
+function drawVisuals(r) {
+  r.visuals = r.visuals || [];
+  const box = el('div', {className:'vis'});
+  const add = el('button', {className:'btn', textContent:'+ Görsel', title:'Oynatıcının konumuna yeni görsel ekler'});
+  add.onclick = () => {
+    const t = Math.min(Math.max(player.currentTime, r.start), r.end - 1);
+    r.visuals.push({id:'v' + Math.random().toString(16).slice(2, 8), start:+t.toFixed(2), end:+Math.min(r.end, t + 3).toFixed(2),
+      label:'', kind:'concept', wiki:'', stock:'', rank:null, enabled:true, candidates:[], choice:-1, file:'', credit:'', page:'', source:''});
+    r.visuals.sort((a, b) => a.start - b.start); saveReels(true);
+  };
+  const n = r.visuals.filter(v => v.file).length;
+  box.append(el('div', {className:'vhead'}, el('span', {textContent:`Görseller (${n}/${r.visuals.length})`}), add));
+  r.visuals.forEach((v, i) => box.append(visualRow(r, v, i)));
+  return box;
+}
+function visualRow(r, v, i) {
+  const url = v.file ? `/api/jobs/${job.id}/visuals/${encodeURIComponent(v.file)}` : '';
+  const thumb = url ? el('img', {className:'thumb', src:url, alt:v.label || ''}) : el('div', {className:'thumb', textContent:'?', title:'Görsel bulunamadı'});
+  thumb.style.cursor = 'pointer'; thumb.onclick = () => playRange(v.start - 0.5, v.end + 0.3);
+  const on = el('input', {type:'checkbox', checked: v.enabled !== false}); on.onchange = () => { v.enabled = on.checked; saveReels(true); };
+  const label = el('input', {className:'vl', value: v.label || '', placeholder:'Ekranda yazacak isim (boş bırakılabilir)'});
+  label.onchange = () => { v.label = label.value; saveReels(); };
+  const inS = el('input', {value: fmt(v.start)}), inE = el('input', {value: fmt(v.end)});
+  inS.onchange = inE.onchange = () => { const a = parse(inS.value), b = parse(inE.value); if (b > a) { v.start = a; v.end = b; saveReels(true); } };
+  const rank = el('input', {className:'rk', value: v.rank || '', placeholder:'#', title:'Liste sırası (ilk 10 gibi)'});
+  rank.onchange = () => { v.rank = parseInt(rank.value) || null; saveReels(); };
+  const q = el('input', {className:'vq', value: v.wiki || v.stock || v.label || '', placeholder:'Arama: ör. Arda Güler, stadium'});
+  const src = el('select', {}, el('option', {value:'auto', textContent:'Otomatik'}), el('option', {value:'wikipedia', textContent:'Wikipedia'}),
+    el('option', {value:'pexels', textContent:'Pexels'}));
+  const search = el('button', {className:'btn', textContent:'🔍', title:'Bu aramayla yeniden bul'});
+  search.onclick = () => visualAction(r, v, 'search', {query: q.value, source: src.value}, search);
+  q.onkeydown = e => { if (e.key === 'Enter') search.click(); };
+  const next = el('button', {className:'btn', textContent:'↻', title:'Başka aday', disabled: (v.candidates || []).length < 2});
+  next.onclick = () => visualAction(r, v, 'next', null, next);
+  const up = el('input', {type:'file', accept:'image/png,image/jpeg,image/webp', className:'hidden'});
+  up.onchange = () => up.files[0] && uploadVisual(r, v, up.files[0]);
+  const upBtn = el('button', {className:'btn', textContent:'⬆', title:'Kendi görselini yükle'}); upBtn.onclick = () => up.click();
+  const del = el('button', {className:'btn', textContent:'✕'}); del.onclick = () => { r.visuals.splice(i, 1); saveReels(true); };
+  const credit = el('div', {className:'credit'});
+  if (v.file) {
+    credit.append((SRC_TR[v.source] || v.source || '') + (v.credit ? ' — ' + v.credit : '') + ' ');
+    if (v.page) credit.append(el('a', {href:v.page, target:'_blank', rel:'noopener', textContent:'kaynak'}));
+    if ((v.candidates || []).length > 1) credit.append(`  ·  aday ${v.choice + 1}/${v.candidates.length}`);
+  } else credit.textContent = 'Görsel yok — aramayı değiştirip 🔍, ya da ⬆ ile yükle';
+  return el('div', {className:'vrow' + (v.enabled === false ? ' off' : '')}, on, thumb,
+    el('div', {className:'vmain'},
+      el('div', {className:'row', style:'gap:6px;flex-wrap:nowrap'}, label, el('span', {className:'t'}, rank)),
+      el('div', {className:'row t', style:'gap:4px'}, inS, '–', inE),
+      el('div', {className:'row', style:'gap:4px;flex-wrap:nowrap'}, q, src),
+      credit),
+    el('div', {className:'vbtns'}, search, next, upBtn, up, del));
+}
+async function flushReels() {
+  clearTimeout(saveTimer);
+  job = await api(`/api/jobs/${job.id}/reels`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.reels)});
+}
+async function visualAction(r, v, action, body, btn) {
+  btn.disabled = true; const old = btn.textContent; btn.textContent = '…';
+  try {
+    await flushReels();
+    const res = await api(`/api/jobs/${job.id}/reels/${r.id}/visuals/${v.id}/${action}`, {method:'POST',
+      headers:{'content-type':'application/json'}, body: JSON.stringify(body || {})});
+    job = res; render();
+    if (res.visual_errors?.length) $('#jobMsg').textContent = res.visual_errors.join(' · ');
+  } catch (e) { alert(e.message); btn.disabled = false; btn.textContent = old; }
+}
+async function uploadVisual(r, v, file) {
+  try {
+    await flushReels();
+    const fd = new FormData(); fd.append('file', file);
+    job = await api(`/api/jobs/${job.id}/reels/${r.id}/visuals/${v.id}/upload`, {method:'POST', body: fd});
+    render();
+  } catch (e) { alert(e.message); }
+}
+$('#findVisuals').onclick = async () => {
+  const ids = job.reels.filter(r => r.enabled && r.enrich).map(r => r.id);
+  if (!ids.length) return alert('Görsel istediğin reel\'lerde "🖼 İçerik ekle" kutucuğunu işaretle.');
+  if (job.reels.some(r => ids.includes(r.id) && (r.visuals || []).some(v => v.source !== 'upload')) &&
+      !confirm('Seçili reels\'lerdeki mevcut görseller yenileriyle değiştirilecek (kendi yüklediklerin korunur). Devam?')) return;
+  try {
+    await flushReels();
+    await api(`/api/jobs/${job.id}/reels/visuals`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ids})});
+    job.status = 'running'; renderStatus(); startPoll();
+  } catch (e) { alert(e.message); }
+};
+// Altyazı/görsel tercihlerini hatırla (yalnızca bu tarayıcıda)
+['capStyle','capPos','visOn','visPos'].forEach(id => {
+  const e = $('#' + id);
+  try { const s = localStorage.getItem('vedit.' + id); if (s != null) e.type === 'checkbox' ? (e.checked = s === '1') : (e.value = s); } catch {}
+  e.onchange = () => { try { localStorage.setItem('vedit.' + id, e.type === 'checkbox' ? (e.checked ? '1' : '0') : e.value); } catch {} };
+});
+// ---------- reels: kurgu şeridi (elle reel işaretleme, Shotcut benzeri) ----------
+// segs: [0, süre] aralığını kaplayan parçalar {a, b, reel, id}. Bölme çizgileri parça sınırlarıdır.
+let mtl = {segs: [], sel: -1, pps: 2, lastSplit: null, meta: null, jobId: null, saveT: null, metaT: null};
+const mtlDur = () => job?.media?.duration || player.duration || 0;
+function mtlFromReels() {
+  const d = mtlDur(), out = []; let cur = 0;
+  [...(job.reels || [])].sort((x, y) => x.start - y.start).forEach(r => {
+    if (r.start > cur + 0.05) out.push({a: cur, b: r.start, reel: false});
+    out.push({a: Math.max(cur, r.start), b: r.end, reel: true, id: r.id}); cur = r.end;
+  });
+  if (d > cur + 0.05 || !out.length) out.push({a: cur, b: Math.max(d, cur + 0.1), reel: false});
+  return out;
+}
+async function mtlInit() {
+  const box = $('#mtlBox');
+  box.classList.toggle('hidden', mode !== 'reels');
+  if (mode !== 'reels' || !job) return;
+  if (!mtlDur()) { player.addEventListener('loadedmetadata', mtlInit, {once: true}); return; }
+  if (mtl.jobId !== job.id) { mtl = {...mtl, segs: mtlFromReels(), sel: -1, lastSplit: null, meta: null, jobId: job.id, edited: false}; mtlFit(); }
+  mtlDraw(); mtlLoadMeta();
+}
+async function mtlLoadMeta() {
+  clearTimeout(mtl.metaT);
+  try {
+    const m = await api(`/api/jobs/${job.id}/timeline`);
+    if (m.state === 'ready') { mtl.meta = m; mtlDraw(); return; }
+    $('#mtlMsg').textContent = m.state === 'error' ? 'Küçük resimler üretilemedi — işaretleme yine çalışır' : 'Küçük resimler ve ses dalgası hazırlanıyor…';
+    if (m.state !== 'error') mtl.metaT = setTimeout(() => job && mtl.jobId === job.id && mtlLoadMeta(), 3000);
+  } catch (e) { /* şerit olmadan da çalışır */ }
+}
+function mtlFit() {
+  const w = $('#mtlScroll').clientWidth || 600, d = mtlDur() || 1;
+  const fit = w / d, max = 60;
+  mtl.ppsRange = [fit, Math.max(fit * 1.01, max)];
+  mtlSetZoom(+$('#mtlZoom').value, false);
+}
+function mtlSetZoom(v, keep = true) {
+  const [lo, hi] = mtl.ppsRange || [1, 60], t = player.currentTime || 0, sc = $('#mtlScroll');
+  const off = t * mtl.pps - sc.scrollLeft;
+  mtl.pps = lo * Math.pow(hi / lo, v / 100);
+  $('#mtlZoom').value = v; mtlDraw();
+  if (keep) sc.scrollLeft = t * mtl.pps - off;
+}
+function mtlTick(pps) { return [1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800].find(s => s * pps >= 70) || 3600; }
+function mtlDraw() {
+  if (!job || mode !== 'reels') return;
+  const d = mtlDur(), pps = mtl.pps, W = Math.max(1, d * pps);
+  $('#mtlInner').style.width = W + 'px';
+  ['#mtlTrack', '#mtlThumbs', '#mtlWave'].forEach(q => $(q).style.width = W + 'px');
+  const ruler = $('#mtlRuler'); ruler.innerHTML = '';
+  const step = mtlTick(pps);
+  for (let t = 0; t <= d; t += step) { ruler.append(el('i', {style: `left:${t * pps}px`}), el('span', {textContent: fmt(t).replace(/\.\d$/, ''), style: `left:${t * pps}px`})); }
+  const th = $('#mtlThumbs'); th.innerHTML = '';
+  const m = mtl.meta;
+  if (m?.tiles?.length) {
+    const tileSec = m.per_tile * m.step;
+    m.tiles.forEach((name, i) => {
+      const img = el('img', {src: `/api/jobs/${job.id}/timeline/${name}`, alt: ''});
+      img.style.left = (i * tileSec * pps) + 'px';
+      img.style.width = (tileSec * pps) + 'px';
+      img.onload = () => { img.style.width = (img.naturalWidth / m.thumb_w * m.step * mtl.pps) + 'px'; };
+      th.append(img);
+    });
+  }
+  $('#mtlWave').style.backgroundImage = m?.wave ? `url(/api/jobs/${job.id}/timeline/wave.png)` : '';
+  const box = $('#mtlSegs'); box.innerHTML = '';
+  let n = 0;
+  mtl.segs.forEach((s, i) => {
+    const div = el('div', {className: 'mseg ' + (s.reel ? 'reel' : 'off') + (i === mtl.sel ? ' sel' : '')});
+    div.style.left = (s.a * pps) + 'px'; div.style.width = Math.max(1, (s.b - s.a) * pps) + 'px';
+    if (s.reel) { n++; div.append(el('b', {textContent: `Reel ${n} · ${Math.round(s.b - s.a)} sn`})); div.title = `${fmt(s.a)} – ${fmt(s.b)}`; }
+    div.onpointerdown = e => { if (e.button !== 0) return; mtl.sel = i; const r = $('#mtlTrack').getBoundingClientRect();
+      player.currentTime = Math.max(0, Math.min(d, (e.clientX - r.left) / mtl.pps)); mtlDraw(); };
+    box.append(div);
+  });
+  mtl.segs.slice(0, -1).forEach((s, i) => {
+    const sp = el('div', {className: 'msplit', title: `Sınır ${fmt(s.b)} — sürükle`});
+    sp.style.left = (s.b * pps) + 'px';
+    sp.onpointerdown = e => {
+      e.preventDefault(); e.stopPropagation();
+      const r = $('#mtlTrack').getBoundingClientRect(), A = mtl.segs[i], B = mtl.segs[i + 1];
+      const mv = ev => { const t = (ev.clientX - r.left) / mtl.pps; const c = Math.max(A.a + 0.3, Math.min(B.b - 0.3, t));
+        A.b = B.a = +c.toFixed(3); sp.style.left = (c * mtl.pps) + 'px'; player.currentTime = c; };
+      const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); mtlDraw(); mtlSave(); };
+      addEventListener('pointermove', mv); addEventListener('pointerup', up);
+    };
+    box.append(sp);
+  });
+  $('#mtlHead').style.left = ((player.currentTime || 0) * pps) + 'px';
+  const reels = mtl.segs.filter(s => s.reel);
+  $('#mtlPrepare').disabled = !reels.length || ['queued','running','rendering'].includes(job.status);
+  if (!$('#mtlMsg').dataset.keep) $('#mtlMsg').textContent = reels.length
+    ? `${reels.length} reel işaretli · toplam ${Math.round(reels.reduce((t, s) => t + s.b - s.a, 0))} sn`
+      + (['queued','running'].includes(job.status) && !job.media?.duration ? '' : (['queued','running'].includes(job.status) ? ' · transkripsiyon sürüyor, işaretlemeye devam edebilirsin' : ''))
+    : 'Reel başında ve sonunda S\'ye bas — iki işaretin arası reel olur';
+}
+function mtlSync() {
+  // Kullanıcı şeritte değişiklik yapmadıysa (ör. otomatik bölme bitti) parçaları işin reels'inden yeniden kur
+  if (!job || mtl.jobId !== job.id) return mtlInit();
+  if (!mtl.edited) mtl.segs = mtlFromReels();
+  mtlDraw();
+}
+function mtlAt(t) { return mtl.segs.findIndex(s => t >= s.a && t < s.b); }
+function mtlSplit() {
+  const t = +(player.currentTime || 0).toFixed(3), i = mtlAt(t);
+  if (i < 0) return;
+  const s = mtl.segs[i];
+  if (t - s.a < 0.3 || s.b - t < 0.3) { mtl.lastSplit = Math.abs(t - s.a) < Math.abs(t - s.b) ? s.a : s.b; return; }
+  mtl.segs.splice(i, 1, {a: s.a, b: t, reel: s.reel, id: s.id}, {a: t, b: s.b, reel: s.reel});
+  // Art arda iki S: aradaki parça reel olur (reel başı + reel sonu)
+  if (mtl.lastSplit != null && mtl.lastSplit < t) {
+    const k = mtl.segs.findIndex(x => Math.abs(x.a - mtl.lastSplit) < 0.01 && Math.abs(x.b - t) < 0.01);
+    if (k >= 0 && !mtl.segs[k].reel) { mtl.segs[k].reel = true; mtl.sel = k; mtl.lastSplit = null; mtlDraw(); mtlSave(); return; }
+  }
+  mtl.lastSplit = t; mtl.sel = mtlAt(t); mtlDraw(); mtlSave();
+}
+function mtlCur() { return mtl.sel >= 0 && mtl.sel < mtl.segs.length ? mtl.sel : mtlAt(player.currentTime || 0); }
+function mtlToggle() { const i = mtlCur(); if (i < 0) return; mtl.segs[i].reel = !mtl.segs[i].reel; mtl.lastSplit = null; mtlDraw(); mtlSave(); }
+function mtlDiscard() { const i = mtlCur(); if (i < 0) return; mtl.segs[i].reel = false; mtl.lastSplit = null; mtlDraw(); mtlSave(); }
+function mtlMerge() {
+  const i = mtlCur(); if (i < 0 || i >= mtl.segs.length - 1) return;
+  const A = mtl.segs[i], B = mtl.segs[i + 1];
+  mtl.segs.splice(i, 2, {a: A.a, b: B.b, reel: A.reel || B.reel, id: A.id || B.id}); mtl.sel = i; mtlDraw(); mtlSave();
+}
+function mtlSave() {
+  clearTimeout(mtl.saveT); mtl.edited = true;
+  mtl.saveT = setTimeout(async () => {
+    const reels = mtl.segs.filter(s => s.reel).map(s => ({start: +s.a.toFixed(3), end: +s.b.toFixed(3), id: s.id || ''}));
+    try {
+      const res = await api(`/api/jobs/${job.id}/reels/manual`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify({reels})});
+      job = {...job, reels: res.reels};
+      // Sunucunun verdiği kimlikleri parçalara işle (başlangıç zamanıyla eşleşir)
+      mtl.segs.forEach(s => { if (s.reel) { const r = res.reels.find(r => Math.abs(r.start - s.a) < 0.01); s.id = r ? r.id : s.id; } else s.id = undefined; });
+      if (['ready','done'].includes(job.status)) { drawReels(); drawTimeline(); }
+      mtlDraw();
+    } catch (e) { $('#mtlMsg').textContent = 'Kaydedilemedi: ' + e.message; }
+  }, 400);
+}
+$('#mtlSplit').onclick = mtlSplit; $('#mtlToggle').onclick = mtlToggle; $('#mtlDel').onclick = mtlDiscard; $('#mtlMerge').onclick = mtlMerge;
+$('#mtlZoom').oninput = e => mtlSetZoom(+e.target.value);
+$('#mtlZoomIn').onclick = () => mtlSetZoom(Math.min(100, +$('#mtlZoom').value + 10));
+$('#mtlZoomOut').onclick = () => mtlSetZoom(Math.max(0, +$('#mtlZoom').value - 10));
+$('#mtlRuler').onpointerdown = e => {
+  const r = $('#mtlTrack').getBoundingClientRect();
+  const seek = ev => { player.currentTime = Math.max(0, Math.min(mtlDur(), (ev.clientX - r.left) / mtl.pps)); };
+  seek(e);
+  const up = () => { removeEventListener('pointermove', seek); removeEventListener('pointerup', up); };
+  addEventListener('pointermove', seek); addEventListener('pointerup', up);
+};
+$('#optSplit').onchange = () => $('#reelLimitWrap').classList.toggle('hidden', $('#optSplit').value === 'manual');
+player.addEventListener('timeupdate', () => {
+  if (mode !== 'reels' || $('#mtlBox').classList.contains('hidden')) return;
+  const x = (player.currentTime || 0) * mtl.pps, sc = $('#mtlScroll');
+  $('#mtlHead').style.left = x + 'px';
+  if (!player.paused && (x < sc.scrollLeft || x > sc.scrollLeft + sc.clientWidth - 30)) sc.scrollLeft = x - 40;
+});
+player.addEventListener('seeked', () => {
+  if (mode !== 'reels') return;
+  const x = (player.currentTime || 0) * mtl.pps, sc = $('#mtlScroll');
+  $('#mtlHead').style.left = x + 'px';
+  if (x < sc.scrollLeft || x > sc.scrollLeft + sc.clientWidth - 30) sc.scrollLeft = x - sc.clientWidth / 2;
+});
+addEventListener('resize', () => { if (mode === 'reels' && job) { mtlFit(); } });
+document.addEventListener('keydown', e => {
+  if (!job || mode !== 'reels' || $('#mtlBox').classList.contains('hidden')) return;
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 's') { e.preventDefault(); mtlSplit(); }
+  else if (k === 'r') { e.preventDefault(); mtlToggle(); }
+  else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); mtlDiscard(); }
+  else if (e.key === '+' || e.key === '=') mtlSetZoom(Math.min(100, +$('#mtlZoom').value + 10));
+  else if (e.key === '-') mtlSetZoom(Math.max(0, +$('#mtlZoom').value - 10));
+  else if (e.key === ',') { player.pause(); player.currentTime = Math.max(0, player.currentTime - 1 / 30); }
+  else if (e.key === '.') { player.pause(); player.currentTime = Math.min(mtlDur(), player.currentTime + 1 / 30); }
+});
+$('#mtlPrepare').onclick = async () => {
+  const ids = mtl.segs.filter(s => s.reel && s.id).map(s => s.id);
+  if (!ids.length) return alert('Önce reel işaretleyin (S ile başı ve sonu).');
+  try {
+    clearTimeout(mtl.saveT);
+    await api(`/api/jobs/${job.id}/reels/prepare`, {method:'POST', headers:{'content-type':'application/json'},
+      body: JSON.stringify({ids, level: $('#mtlLevel').value || null, context: $('#tightContext').value})});
+    job.status = 'running'; renderStatus(); startPoll();
+  } catch (e) { alert(e.message); }
+};
+
+// ---------- reels: dikey yerleşim bölgeleri (oyun + kameralar) ----------
+let lay = null, layT = 0;   // lay: {content:[x,y,w,h], cams:[[...]]} — kaynak piksel
+const LAYOUT_MODES = ['faces_top', 'game_top', 'game_full'];
+function laySrcSize() { return [job.media.width, job.media.height]; }
+async function openLayout() {
+  $('#layMsg').textContent = '';
+  const res = await api(`/api/jobs/${job.id}/layout`);
+  lay = res.regions ? {content: res.regions.content, cams: res.regions.cams || []} : null;
+  layT = res.regions?.t ?? (job.reels?.[0] ? job.reels[0].start + 0.4 * (job.reels[0].end - job.reels[0].start) : 0);
+  if (!lay) { $('#layMsg').textContent = 'Bölgeler henüz yok — 🔍 Otomatik bul'; }
+  else if (res.regions.source) $('#layMsg').textContent = {claude:'Claude buldu', heuristic:'Görüntü analiziyle bulundu', user:'Elle ayarlandı', default:'Varsayılan'}[res.regions.source] + (res.regions.notes ? ' — ' + res.regions.notes : '');
+  loadLayFrame(); drawLayBoxes(); refreshLayPreview();
+}
+function loadLayFrame() { $('#layImg').src = `/api/jobs/${job.id}/frame?t=${layT.toFixed(1)}`; }
+$('#layImg').onload = () => drawLayBoxes();
+function drawLayBoxes() {
+  const box = $('#layFrameBox'); box.querySelectorAll('.lbox').forEach(b => b.remove());
+  if (!lay || !$('#layImg').clientWidth) return;
+  const [sw] = laySrcSize(), k = $('#layImg').clientWidth / sw;
+  const mk = (r, cls, label, onDel) => {
+    const d = el('div', {className: 'lbox ' + cls}, el('b', {textContent: label}));
+    const place = () => { d.style.left = r[0]*k + 'px'; d.style.top = r[1]*k + 'px'; d.style.width = r[2]*k + 'px'; d.style.height = r[3]*k + 'px'; };
+    place();
+    const rs = el('div', {className: 'rs'}); d.append(rs);
+    if (onDel) { const x = el('span', {className: 'del', textContent: '✕'}); x.onpointerdown = e => e.stopPropagation(); x.onclick = onDel; d.append(x); }
+    const drag = (e, resize) => {
+      e.preventDefault(); e.stopPropagation();
+      const [sw2, sh2] = laySrcSize(), x0 = e.clientX, y0 = e.clientY, r0 = [...r];
+      const mv = ev => {
+        const dx = (ev.clientX - x0) / k, dy = (ev.clientY - y0) / k;
+        if (resize) { r[2] = Math.max(40, Math.min(sw2 - r[0], r0[2] + dx)); r[3] = Math.max(40, Math.min(sh2 - r[1], r0[3] + dy)); }
+        else { r[0] = Math.max(0, Math.min(sw2 - r[2], r0[0] + dx)); r[1] = Math.max(0, Math.min(sh2 - r[3], r0[1] + dy)); }
+        place();
+      };
+      const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); $('#layMsg').textContent = 'Değişti — Kaydet ve önizle'; };
+      addEventListener('pointermove', mv); addEventListener('pointerup', up);
+    };
+    d.onpointerdown = e => drag(e, false); rs.onpointerdown = e => drag(e, true);
+    box.append(d);
+  };
+  mk(lay.content, '', 'OYUN / EKRAN');
+  lay.cams.forEach((c, i) => mk(c, 'cam', 'KAMERA ' + (i + 1), () => { lay.cams.splice(i, 1); drawLayBoxes(); }));
+}
+function refreshLayPreview() {
+  const mode = $('#reelVertical').value;
+  if (!lay || !LAYOUT_MODES.includes(mode)) { $('#layPreview').removeAttribute('src'); return; }
+  $('#layPreview').src = `/api/jobs/${job.id}/layout/preview?mode=${mode}&t=${layT.toFixed(1)}&_=${Date.now()}`;
+}
+$('#layoutToggle').onclick = () => { const ed = $('#layoutEditor'); ed.classList.toggle('hidden'); if (!ed.classList.contains('hidden')) openLayout().catch(e => alert(e.message)); };
+$('#reelVertical').onchange = () => { if (!$('#layoutEditor').classList.contains('hidden')) refreshLayPreview(); };
+addEventListener('resize', () => { if (!$('#layoutEditor').classList.contains('hidden')) drawLayBoxes(); });
+$('#layDetect').onclick = async () => {
+  const b = $('#layDetect'); b.disabled = true; $('#layMsg').textContent = 'Bölgeler aranıyor (Claude ile 1 dk kadar sürebilir)…';
+  try {
+    const res = await api(`/api/jobs/${job.id}/layout/detect`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({t: layT})});
+    lay = {content: res.regions.content, cams: res.regions.cams || []};
+    $('#layMsg').textContent = (res.regions.source === 'claude' ? 'Claude buldu' : 'Görüntü analiziyle bulundu') + (res.regions.notes ? ' — ' + res.regions.notes : '');
+    drawLayBoxes(); refreshLayPreview();
+  } catch (e) { $('#layMsg').textContent = 'Bulunamadı: ' + e.message; }
+  b.disabled = false;
+};
+$('#layAddCam').onclick = () => {
+  if (!lay) { const [w, h] = laySrcSize(); lay = {content: [0, 0, Math.round(w * .7), h], cams: []}; }
+  const [w, h] = laySrcSize(); lay.cams.push([Math.round(w * .72), Math.round(h * .1), Math.round(w * .25), Math.round(h * .35)]);
+  drawLayBoxes(); $('#layMsg').textContent = 'Kamera eklendi — yerine sürükle, sonra Kaydet';
+};
+$('#layFrame').onclick = () => { layT = player.currentTime || layT; loadLayFrame(); refreshLayPreview(); };
+$('#laySave').onclick = async () => {
+  if (!lay) return alert('Önce 🔍 Otomatik bul ya da + Kamera ile bölge oluşturun.');
+  try {
+    const res = await api(`/api/jobs/${job.id}/layout`, {method:'PUT', headers:{'content-type':'application/json'},
+      body: JSON.stringify({content: lay.content.map(Math.round), cams: lay.cams.map(c => c.map(Math.round))})});
+    lay = {content: res.regions.content, cams: res.regions.cams}; drawLayBoxes(); refreshLayPreview();
+    $('#layMsg').textContent = 'Kaydedildi';
+  } catch (e) { alert(e.message); }
+};
+
+function reelStyle() {
+  return {captions: $('#capStyle').value || null, caption_pos: $('#capPos').value, visuals: $('#visOn').checked, visual_pos: $('#visPos').value};
 }
 function saveReels(redraw) {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
-    job = await api(`/api/jobs/${job.id}/reels`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.reels)});
-    if (redraw) render(); else drawTimeline();
+    try {
+      job = await api(`/api/jobs/${job.id}/reels`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.reels)});
+    } catch (e) {
+      // Ör. arka plan işi sürerken (409): değişiklik kaydedilmedi; sunucudaki güncel hali göster
+      $('#jobMsg').textContent = 'Değişiklik kaydedilmedi: ' + e.message;
+      job = await api(`/api/jobs/${job.id}`); render(); return;
+    }
+    if (redraw) { if (job.status === 'rendering') drawReels(); else render(); } else drawTimeline();
   }, redraw ? 0 : 400);
 }
 $('#renderReels').onclick = async () => {
   clearTimeout(saveTimer);
   await api(`/api/jobs/${job.id}/reels`, {method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(job.reels)});
   await api(`/api/jobs/${job.id}/reels/render`, {method:'POST', headers:{'content-type':'application/json'},
-    body: JSON.stringify({ids: job.reels.filter(r => r.enabled).map(r => r.id), vertical: $('#reelVertical').value || null})});
+    body: JSON.stringify({ids: job.reels.filter(r => r.enabled).map(r => r.id), vertical: $('#reelVertical').value || null,
+      style: reelStyle()})});
   job.status = 'rendering'; renderStatus(); startPoll();
 };
 function drawReelOut() {
